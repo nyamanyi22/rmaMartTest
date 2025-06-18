@@ -1,0 +1,63 @@
+/* src/styles/Login.css */
+
+/* --- Page / Container Styling --- */
+.login-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+/* --- Form Card Styling --- */
+.login-card {
+    background-color: #ffffff; /* bg-white */
+    padding: 1.5rem; /* p-6 */
+    border-radius: 0.5rem; /* rounded */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+    width: 100%;
+    max-width: 24rem; /* max-w-sm */
+}
+
+/* --- Title Styling --- */
+.login-title {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 600; /* font-semibold */
+    margin-bottom: 1rem; /* mb-4 */
+    text-align: center; /* Added for better centering of the title */
+    color: #1d4ed8; /* text-blue-700 */
+}
+
+/* --- Input Field Styling --- */
+.login-input {
+    width: 100%; /* w-full */
+    padding: 0.5rem; /* p-2 */
+    border: 1px solid #d1d5db; /* border */
+    margin-bottom: 1rem; /* mb-4 */
+    border-radius: 0.25rem; /* rounded */
+    outline: none; /* remove default focus outline */
+}
+
+.login-input:focus {
+    border-color: #2563eb; /* focus:border-blue-600 (example, adjust as needed) */
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); /* focus:ring-2 (example, adjust as needed) */
+}
+
+
+/* --- Button Styling --- */
+.login-button {
+    background-color: #1d4ed8; /* bg-blue-700 */
+    color: #ffffff; /* text-white */
+    padding-top: 0.5rem; /* py-2 */
+    padding-bottom: 0.5rem; /* py-2 */
+    width: 100%; /* w-full */
+    border-radius: 0.25rem; /* rounded */
+    border: none; /* remove default button border */
+    cursor: pointer;
+    font-weight: 500; /* optional: font-medium */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.login-button:hover {
+    background-color: #1e40af; /* hover:bg-blue-800 (example, adjust as needed) */
+}

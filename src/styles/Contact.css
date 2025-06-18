@@ -1,0 +1,133 @@
+/* Contact.css */
+.contact-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #f0f9ff 100%);
+}
+
+.contact-main {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.contact-card {
+  width: 100%;
+  max-width: 64rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.contact-header {
+  background:#7ca9d6;
+  padding: 1.5rem;
+  color: white;
+  text-align: center;
+}
+
+.contact-header h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.contact-body {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .contact-body {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contact-info {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.contact-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.contact-icon {
+  color: #2563eb;
+  margin-top: 0.25rem;
+}
+
+.contact-item h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.contact-item p {
+  color: #4b5563;
+  margin-top: 0.5rem;
+}
+
+.contact-link {
+  color: #4b5563;
+  transition: color 0.2s;
+}
+
+.contact-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.contact-map {
+  background: #f3f4f6;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #e5e7eb;
+}
+
+.map-placeholder {
+  text-align: center;
+  width: 100%;
+}
+
+.map-container {
+  aspect-ratio: 16/9;
+  background: #dbeafe;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-icon {
+  color: #2563eb;
+}
+
+.map-button {
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: white;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.map-button:hover {
+  background: #1d4ed8;
+}

@@ -1,0 +1,140 @@
+/* ReturnPolicy.css */
+.return-policy {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.return-policy h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .return-policy h1 {
+    font-size: 2.25rem;
+  }
+}
+
+.return-policy p {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .return-policy p {
+    font-size: 1rem;
+  }
+}
+
+.return-policy section {
+  margin-bottom: 2rem;
+}
+
+.return-policy h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1d4ed8;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .return-policy h2 {
+    font-size: 1.25rem;
+  }
+}
+
+.return-policy ol {
+  list-style-type: decimal;
+  list-style-position: inside;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.return-policy ol li {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .return-policy ol li {
+    font-size: 1rem;
+  }
+}
+
+.return-policy ol li strong {
+  font-weight: 600;
+}
+
+.return-policy ul {
+  list-style-type: disc;
+  list-style-position: inside;
+  margin-left: 0;
+  padding-left: 0;
+  color: #dc2626;
+}
+
+.return-policy ul li {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.help-box {
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+.help-box h3 {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1d4ed8;
+  margin-bottom: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .help-box h3 {
+    font-size: 1.125rem;
+  }
+}
+
+.help-box p {
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+.help-box a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.help-box a:hover {
+  color: #1e40af;
+}
+.return-policy a {
+  transition: color 0.2s ease;
+}
+
+.help-box {
+  transition: box-shadow 0.2s ease;
+}
+
+.help-box:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+@media print {
+  .return-policy {
+    padding: 0;
+    font-size: 12pt;
+  }
+  
+  .help-box {
+    page-break-inside: avoid;
+  }
+}

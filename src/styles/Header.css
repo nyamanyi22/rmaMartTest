@@ -1,0 +1,112 @@
+/* src/components/Header.css */
+
+.rma-header {
+  font-family: 'Arial', sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Top Header Section */
+.header-top {
+  background-color: #f8f9fa; /* Light grey background */
+  padding: 8px 0;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: flex-end; /* Pushes links to the right */
+  gap: 20px;
+}
+
+.login-link, .signup-link {
+  /* Using anchor tags for Link components */
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s;
+  /* Add button-like styling */
+  padding: 6px 12px; /* Adjusted padding for button look */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.login-link {
+  background-color: #007bff; /* Blue for Login */
+  color: white;
+}
+
+.login-link:hover {
+  background-color: #0056b3;
+}
+
+.signup-link {
+  background-color: #6c757d; /* Grey for Create Account */
+  color: white;
+}
+
+.signup-link:hover {
+  background-color: #5a6268;
+}
+
+
+/* Main Header Section */
+.header-main {
+  background-color: #fff; /* White background */
+  padding: 15px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #0066cc; /* Color for the "Mart Networks" text */
+  font-size: 24px; /* Adjust font size for logo text */
+  font-weight: bold;
+}
+
+.logo img {
+  height: 40px; /* Control image size via CSS */
+  width: auto;
+}
+
+
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* ... rest of your CSS for user-info, logout-btn, main-nav, etc. ... */
+/* I've only included the parts relevant to the Header component for brevity here */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .auth-links {
+    justify-content: center;
+    width: 100%; /* Ensure buttons span width */
+  }
+
+  .login-link, .signup-link {
+    width: 48%; /* Adjust for mobile button width */
+    text-align: center;
+  }
+
+  .logo {
+    flex-direction: column;
+    text-align: center;
+  }
+}
