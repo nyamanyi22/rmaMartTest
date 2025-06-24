@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../components/Top';
+import Header from '../components/header/index';
 import Sidebar from '../components/Sidebar';
 import QuickActions from '../components/QuickAction';
 import Footer from '../components/Footer';

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Signup.css'; // Ensure your CSS is correctly linked
+  import axios from 'axios';
 
 // Mocking useNavigate and useAuth (as per your previous code)
 const useNavigate = () => {
@@ -93,7 +94,7 @@ const CustomerSignup = () => {
         lastName: '',
         email: '',
         password: '',
-        confirmPassword: '',
+     password_confirmation: '',
         // Shipping Address fields (replaces old shippingAddress)
         shippingAddress1: '',
         shippingAddress2: '',
@@ -126,165 +127,206 @@ const CustomerSignup = () => {
 
     // Modified handleChange to handle all new fields and checkboxes
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+  const { name, value, type, checked } = e.target;
 
-        if (name === 'isNotCompany') {
-            setIsNotCompany(checked);
-            if (checked) {
-                // If "Not a Company" is checked, clear companyName and website
-                setFormData(prevData => ({ ...prevData, companyName: '', website: '' }));
-                setErrors(prevErrors => ({ ...prevErrors, companyName: '', website: '' }));
-            }
-        } else if (name === 'isBillingAddressDifferent') {
-            setIsBillingAddressDifferent(checked);
-            if (!checked) {
-                // If "My billing address is different" is UNchecked, clear billing address fields
-                setFormData(prevData => ({
-                    ...prevData,
-                    billingAddress1: '',
-                    billingAddress2: '',
-                    billingCity: '',
-                    billingState: '',
-                    billingZipcode: '',
-                    billingCountry: '',
-                }));
-                // Also clear any related errors
-                setErrors(prevErrors => ({
-                    ...prevErrors,
-                    billingAddress1: '', billingAddress2: '', billingCity: '',
-                    billingState: '', billingZipcode: '', billingCountry: '',
-                }));
-            }
-        } else {
-            setFormData({ ...formData, [name]: value });
-        }
-        setErrors(prevErrors => ({ ...prevErrors, [name]: '' })); // Clear error for the changed field
-    };
+  // Handle checkboxes (isNotCompany, isBillingAddressDifferent)
+  if (type === 'checkbox') {
+    if (name === 'isNotCompany') {
+      setIsNotCompany(checked);
+      if (checked) {
+        setFormData(prevData => ({ ...prevData, companyName: '', website: '' }));
+        setErrors(prevErrors => ({ ...prevErrors, companyName: '', website: '' }));
+      }
+    } else if (name === 'isBillingAddressDifferent') {
+      setIsBillingAddressDifferent(checked);
+      if (!checked) {
+        setFormData(prevData => ({
+          ...prevData,
+          billingAddress1: '', billingAddress2: '', billingCity: '',
+          billingState: '', billingZipcode: '', billingCountry: '',
+        }));
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          billingAddress1: '', billingAddress2: '', billingCity: '',
+          billingState: '', billingZipcode: '', billingCountry: '',
+        }));
+      }
+    }
+    return; // Exit early for checkboxes
+  }
 
+  // Handle all other inputs (text, email, etc.)
+  const trimmedValue = typeof value === 'string' ? value.trim() : value;
+  setFormData(prevData => ({ ...prevData, [name]: trimmedValue }));
+  setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
+};
     // --- Validate Form (Extensively Modified) ---
-    const validateForm = () => {
-        const newErrors = {};
+   const validateForm = () => {
+  const newErrors = {};
+  const { 
+    companyName, website, firstName, lastName, email, phone,
+    shippingAddress1, shippingCity, shippingState, shippingZipcode, shippingCountry,
+    password, password_confirmation,
+    billingAddress1, billingCity, billingState, billingZipcode, billingCountry
+  } = formData;
 
-        // Conditional validation for Company Name and Website
-        if (!isNotCompany) {
-            if (!formData.companyName.trim()) {
-                newErrors.companyName = 'Company name is required';
-            }
-            // Website is optional based on your list, but we can make it required if company is selected
-            // if (!formData.website.trim()) {
-            //     newErrors.website = 'Website is required for companies';
-            // }
-        }
+  // -- Company Validation --
+  if (!isNotCompany && !companyName?.trim()) {
+    newErrors.companyName = 'Company name is required';
+  }
 
-        // Required Personal Info fields
-        if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-        if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
-        if (!formData.email.trim()) newErrors.email = 'Email address is required';
-        if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+  // -- Personal Info Validation --
+  if (!firstName?.trim()) newErrors.firstName = 'First name is required';
+  if (!lastName?.trim()) newErrors.lastName = 'Last name is required';
+  
+  // Email validation
+  if (!email?.trim()) {
+    newErrors.email = 'Email address is required';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    newErrors.email = 'Invalid email format';
+  }
 
-        // Shipping Address fields (all required)
-        if (!formData.shippingAddress1.trim()) newErrors.shippingAddress1 = 'Shipping address 1 is required';
-        if (!formData.shippingCity.trim()) newErrors.shippingCity = 'Shipping city is required';
-        if (!formData.shippingState.trim()) newErrors.shippingState = 'Shipping state is required';
-        if (!formData.shippingZipcode.trim()) newErrors.shippingZipcode = 'Shipping zip code is required';
-        if (!formData.shippingCountry.trim()) newErrors.shippingCountry = 'Shipping country is required';
+  // Phone validation
+  if (!phone?.trim()) {
+    newErrors.phone = 'Phone number is required';
+  } else if (!/^\d{7,}$/.test(phone)) {
+    newErrors.phone = 'Invalid phone number (min 7 digits)';
+  }
 
+  // -- Shipping Address Validation --
+  if (!shippingAddress1?.trim()) newErrors.shippingAddress1 = 'Address line 1 is required';
+  if (!shippingCity?.trim()) newErrors.shippingCity = 'City is required';
+  if (!shippingState?.trim()) newErrors.shippingState = 'State is required';
+  if (!shippingZipcode?.trim()) newErrors.shippingZipcode = 'Zip code is required';
+  if (!shippingCountry?.trim()) newErrors.shippingCountry = 'Country is required';
 
-        // Password validation
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters long';
-        }
+// -- Password Validation --
+if (!password) {
+  newErrors.password = 'Password is required';
+} else if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password)) {
+  newErrors.password = 'Password needs 8+ chars with upper/lowercase and numbers';
+}
 
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = 'Confirm password is required';
-        } else if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
+// -- Password Confirmation --
+if (!password_confirmation) {
+  newErrors.password_confirmation = 'Confirm password';
+} else if (password !== password_confirmation) {
+  newErrors.password_confirmation = 'Passwords don\'t match';
+}
+  // -- Conditional Billing Address Validation --
+  if (isBillingAddressDifferent) {
+    if (!billingAddress1?.trim()) newErrors.billingAddress1 = 'Billing address line 1 is required';
+    if (!billingCity?.trim()) newErrors.billingCity = 'Billing city is required';
+    if (!billingState?.trim()) newErrors.billingState = 'Billing state is required';
+    if (!billingZipcode?.trim()) newErrors.billingZipcode = 'Billing zip code is required';
+    if (!billingCountry?.trim()) newErrors.billingCountry = 'Billing country is required';
+  }
 
-        // Email format validation
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Invalid email format';
-        }
-
-        // Phone format validation (simple numeric check, can be expanded)
-        if (formData.phone && !/^\d{7,}$/.test(formData.phone)) { // min 7 digits for general phone
-            newErrors.phone = 'Invalid phone number format (min 7 digits)';
-        }
-
-        // Conditional validation for Billing Address fields
-        if (isBillingAddressDifferent) {
-            if (!formData.billingAddress1.trim()) newErrors.billingAddress1 = 'Billing address 1 is required';
-            if (!formData.billingCity.trim()) newErrors.billingCity = 'Billing city is required';
-            if (!formData.billingState.trim()) newErrors.billingState = 'Billing state is required';
-            if (!formData.billingZipcode.trim()) newErrors.billingZipcode = 'Billing zip code is required';
-            if (!formData.billingCountry.trim()) newErrors.billingCountry = 'Billing country is required';
-        }
-
-        return newErrors;
-    };
-
+  return newErrors;
+};
 
     // Handle form submission (no major changes here, as validateForm handles the logic)
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+   
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate form
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setModal({ message: 'Please correct form errors', type: 'error' });
+        return;
+    }
 
-        const validationErrors = validateForm();
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            setModal({ message: 'Please correct the errors in the form.', type: 'error' });
-            return;
-        }
+    setIsSubmitting(true);
 
-        setIsSubmitting(true);
+    try {
+        // Prepare data
+        const billingFields = isBillingAddressDifferent ? {
+            billing_address_1: formData.billingAddress1,
+            billing_address_2: formData.billingAddress2,
+            billing_city: formData.billingCity,
+            billing_state: formData.billingState,
+            billing_zipcode: formData.billingZipcode,
+            billing_country: formData.billingCountry
+        } : {
+            billing_address_1: null,
+            billing_address_2: null,
+            billing_city: null,
+            billing_state: null,
+            billing_zipcode: null,
+            billing_country: null
+        };
 
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
+        const response = await axios.post('http://127.0.0.1:8000/api/register', {
+            company_name: formData.companyName,
+            is_not_company: isNotCompany,
+            website: formData.website,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            email: formData.email,
+            password: formData.password,
+            password_confirmation: formData.password_confirmation,
+            phone: formData.phone,
+            fax: formData.fax,
+            shipping_address1: formData.shippingAddress1, // Remove underscore
+            shipping_address2: formData.shippingAddress2,
+            shipping_city: formData.shippingCity,
+            shipping_state: formData.shippingState,
+            shipping_zipcode: formData.shippingZipcode,
+            shipping_country: formData.shippingCountry,
+            is_billing_address_different: isBillingAddressDifferent,
+            ...billingFields,
+            verification_key: formData.verificationKey
+        });
 
-            // Prepare data for submission, ensuring conditional fields are handled
-            const dataToSend = { ...formData };
-            if (isNotCompany) {
-                dataToSend.companyName = '';
-                dataToSend.website = '';
+        // Success handling
+        setModal({ 
+            message: response.data.message || 'Registration successful!', 
+            type: 'success' 
+        });
+        
+        // Reset form
+        setFormData({
+            companyName: '', website: '', firstName: '', lastName: '', email: '',
+            phone: '', fax: '', shippingAddress1: '', shippingAddress2: '',
+            shippingCity: '', shippingState: '', shippingZipcode: '', shippingCountry: '',
+            billingAddress1: '', billingAddress2: '', billingCity: '',
+            billingState: '', billingZipcode: '', billingCountry: '',
+            verificationKey: '', password: '', password_confirmation: '',
+        });
+        setIsNotCompany(false);
+        setIsBillingAddressDifferent(false);
+        setErrors({});
+        
+        navigate('/');
+    } catch (error) {
+        console.error("Submission error:", error);
+        
+        let errorMessage = 'An error occurred during submission';
+        const formattedErrors = {};
+        
+        if (error.response) {
+            if (error.response.status === 422 && error.response.data.errors) {
+                Object.entries(error.response.data.errors).forEach(([key, value]) => {
+                    formattedErrors[key] = Array.isArray(value) ? value[0] : value;
+                });
+                errorMessage = 'Please correct the highlighted errors';
+            } else {
+                errorMessage = error.response.data.message || errorMessage;
             }
-            if (!isBillingAddressDifferent) {
-                // If billing address is NOT different, clear all billing address fields
-                dataToSend.billingAddress1 = dataToSend.shippingAddress1; // Can also copy shipping to billing if preferred
-                dataToSend.billingAddress2 = dataToSend.shippingAddress2;
-                dataToSend.billingCity = dataToSend.shippingCity;
-                dataToSend.billingState = dataToSend.shippingState;
-                dataToSend.billingZipcode = dataToSend.shippingZipcode;
-                dataToSend.billingCountry = dataToSend.shippingCountry;
-            }
-
-            console.log("Submitting form data:", dataToSend); // For debugging
-            await login({ email: formData.email }); // Assuming login only needs email for mock
-
-            setModal({ message: 'Customer signed up successfully!', type: 'success' });
-            // Reset form
-            setFormData({
-                companyName: '', website: '', firstName: '', lastName: '', email: '',
-                phone: '', fax: '', shippingAddress1: '', shippingAddress2: '',
-                shippingCity: '', shippingState: '', shippingZipcode: '', shippingCountry: '',
-                billingAddress1: '', billingAddress2: '', billingCity: '',
-                billingState: '', billingZipcode: '', billingCountry: '',
-                verificationKey: '', password: '', confirmPassword: '',
-            });
-            setIsNotCompany(false);
-            setIsBillingAddressDifferent(false);
-            navigate('/');
-        } catch (error) {
-            console.error('Signup error:', error);
-            setModal({ message: 'Signup failed. Please try again.', type: 'error' });
-        } finally {
-            setIsSubmitting(false);
+        } else if (error.request) {
+            errorMessage = 'No server response - check your connection';
         }
-    };
+        
+        setErrors(formattedErrors);
+        setModal({ message: errorMessage, type: 'error' });
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
-    const closeModal = () => {
-        setModal(null);
-    };
+const closeModal = () => setModal(null);
 
     return (
         <div className="signup-page-container">
@@ -408,20 +450,22 @@ const CustomerSignup = () => {
                         </div>
 
                         {/* Confirm Password (Retype Password) */}
-                        <div className="mt-4">
-                            <label htmlFor="confirmPassword" className="input-label">Retype Password</label>
-                            <input
-                                type="password"
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                className={`form-input ${errors.confirmPassword ? 'input-error' : ''}`}
-                            />
-                            {errors.confirmPassword && (
-                                <p className="error-message">{errors.confirmPassword}</p>
-                            )}
-                        </div>
+                       {/* Confirm Password (Retype Password) */}
+<div className="mt-4">
+    <label htmlFor="password_confirmation" className="input-label">Retype Password</label>
+    <input
+        type="password"
+        id="password_confirmation"
+        name="password_confirmation" // ✅ must match what Laravel expects
+        value={formData.password_confirmation} // ✅ must match the correct state key
+        onChange={handleChange}
+        className={`form-input ${errors.password_confirmation ? 'input-error' : ''}`}
+    />
+    {errors.password_confirmation && (
+        <p className="error-message">{errors.password_confirmation}</p>
+    )}
+</div>
+
                     </div>
 
 
@@ -731,6 +775,14 @@ const CustomerSignup = () => {
                             )}
                         </div>
                     </div>
+
+{Object.values(errors).length > 0 && (
+    <div className="text-red-600 mt-4">
+        {Object.entries(errors).map(([key, msg]) => (
+            <p key={key} className="text-sm">{msg}</p>
+        ))}
+    </div>
+)}
 
 
                     <button

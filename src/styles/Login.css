@@ -1,63 +1,118 @@
 /* src/styles/Login.css */
 
-/* --- Page / Container Styling --- */
+/* General page container for centering and background */
 .login-page-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-color: #f3f4f6; /* bg-gray-100 */
+    min-height: 100vh; /* Full viewport height */
+    background-color: #f0f2f5; /* Light grey background, similar to common UIs */
+    padding: 20px; /* Add some padding around the form */
+    box-sizing: border-box; /* Include padding in element's total width and height */
 }
 
-/* --- Form Card Styling --- */
+/* The login card/form itself */
 .login-card {
-    background-color: #ffffff; /* bg-white */
-    padding: 1.5rem; /* p-6 */
-    border-radius: 0.5rem; /* rounded */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+    background-color: #ffffff; /* White background for the card */
+    padding: 30px 40px; /* More padding inside the card */
+    border-radius: 8px; /* Slightly rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
     width: 100%;
-    max-width: 24rem; /* max-w-sm */
+    max-width: 400px; /* Max width for readability */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between elements */
 }
 
-/* --- Title Styling --- */
+/* Title of the login form */
 .login-title {
-    font-size: 1.25rem; /* text-xl */
-    font-weight: 600; /* font-semibold */
-    margin-bottom: 1rem; /* mb-4 */
-    text-align: center; /* Added for better centering of the title */
-    color: #1d4ed8; /* text-blue-700 */
+    font-size: 2em; /* Larger, more prominent title */
+    color: #333; /* Dark grey for good contrast */
+    margin-bottom: 25px; /* Space below the title */
+    text-align: center;
+    font-weight: 600; /* Slightly bolder */
 }
 
-/* --- Input Field Styling --- */
+/* Input fields */
 .login-input {
-    width: 100%; /* w-full */
-    padding: 0.5rem; /* p-2 */
-    border: 1px solid #d1d5db; /* border */
-    margin-bottom: 1rem; /* mb-4 */
-    border-radius: 0.25rem; /* rounded */
-    outline: none; /* remove default focus outline */
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd; /* Light grey border */
+    border-radius: 6px; /* Match other form inputs */
+    font-size: 1em;
+    color: #333;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for focus */
+    box-sizing: border-box; /* Crucial for consistent width */
 }
 
 .login-input:focus {
-    border-color: #2563eb; /* focus:border-blue-600 (example, adjust as needed) */
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); /* focus:ring-2 (example, adjust as needed) */
+    border-color: #007bff; /* Blue border on focus */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Light blue glow on focus */
+    outline: none; /* Remove default outline */
 }
 
-
-/* --- Button Styling --- */
+/* Login button */
 .login-button {
-    background-color: #1d4ed8; /* bg-blue-700 */
-    color: #ffffff; /* text-white */
-    padding-top: 0.5rem; /* py-2 */
-    padding-bottom: 0.5rem; /* py-2 */
-    width: 100%; /* w-full */
-    border-radius: 0.25rem; /* rounded */
-    border: none; /* remove default button border */
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #007bff; /* Primary blue color */
+    color: white;
+    border: none;
+    border-radius: 6px; /* Match input border-radius */
+    font-size: 1.1em; /* Slightly larger text */
+    font-weight: 600;
     cursor: pointer;
-    font-weight: 500; /* optional: font-medium */
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease, transform 0.1s ease; /* Smooth hover and click effects */
+    margin-top: 10px; /* Space above the button */
 }
 
 .login-button:hover {
-    background-color: #1e40af; /* hover:bg-blue-800 (example, adjust as needed) */
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.login-button:active {
+    transform: translateY(1px); /* Slight press effect on click */
+}
+
+/* Error message styling (as added in the previous response) */
+.error-message {
+    color: #dc3545; /* Red for errors */
+    background-color: #f8d7da; /* Light red background */
+    border: 1px solid #f5c6cb;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* Sign up prompt and link styling (as added in the previous response) */
+.signup-prompt {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #d63a3a; /* Darker grey for legibility */
+    text-align: center;
+}
+
+.signup-link {
+    color: #e4e9ee; /* Primary blue for the link */
+    text-decoration: none; /* Remove default underline */
+    font-weight: bold;
+}
+
+.signup-link:hover {
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    .login-card {
+        padding: 25px 25px; /* Slightly less padding on smaller screens */
+    }
+    .login-title {
+        font-size: 1.8em;
+    }
+    .login-button {
+        font-size: 1em;
+    }
 }

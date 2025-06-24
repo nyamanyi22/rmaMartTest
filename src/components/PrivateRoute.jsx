@@ -8,7 +8,7 @@ const PrivateRoute = ({ children }) => {
 
   // If user is not logged in, redirect to signup
   if (!user) {
-    return <Navigate to="/signup" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // If user is logged in, show the protected component
