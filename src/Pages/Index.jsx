@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import Header from '../components/header/index';
 import Sidebar from '../components/Sidebar';
 import QuickActions from '../components/QuickAction';
+
 import Footer from '../components/Footer';
 import '../index.css';
 
@@ -16,6 +17,7 @@ const HomePage = () => {
   return (
     <div className="app">
        <Header userEmail={userEmail} onLogout={handleLogout} />
+      
       <div className="main-content">
      
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />

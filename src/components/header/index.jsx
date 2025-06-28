@@ -40,7 +40,11 @@ const Header = () => {
         </nav>
 
         <div className="auth-links">
+<<<<<<< HEAD
           <NavLink to="/signup" className="auth-link signup">Create Account</NavLink>
+=======
+          <NavLink to="/register" className="auth-link signup">Create Account</NavLink>
+>>>>>>> 0213b1d891f6cb54c38180799e9384b4353ebf8a
           <NavLink to="/login" className="auth-link login">Login</NavLink>
         </div>
 
