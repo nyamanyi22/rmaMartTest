@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Login.css';
 import axios from 'axios';
+import axiosClient from '../axioClient';
+import Header from '../components/header/index';
 
 const Login = () => {
   const { login } = useAuth();
@@ -17,10 +19,12 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/login', formData);
+        await axiosClient.get('/sanctum/csrf-cookie');
+
+      const response = await axiosClient.post('/api/login', formData);
       
-      // Assuming your backend returns both customer data and token
       login(response.data.customer, response.data.token);
+        navigate('/');
       
     } catch (err) {
       console.error('Login failed:', err);
@@ -33,6 +37,7 @@ const Login = () => {
   return (
     <div className="login-page-container">
       <form onSubmit={handleSubmit} className="login-card">
+           <Header />
         <h2 className="login-title">Login</h2>
         
         {error && (

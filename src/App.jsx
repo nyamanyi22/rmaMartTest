@@ -19,7 +19,7 @@ function App() {
       <Route path="/signup" element={<CustomerSignup/>} />
       <Route path="/login" element={<Login />} />
       {/* Private route for RMARequest */}
-<Route path="/PreRequest" element={<PreRequest />} />
+<Route path="/PreRequest" element={<PrivateRoute><PreRequest /></PrivateRoute>} />
 <Route path="/RMARequest" element={<PrivateRoute><RMARequest /></PrivateRoute>} />
      
     </Routes>
