@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Login.css';
 import axios from 'axios';
-
+import Header from '../components/header/index';
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ const Login = () => {
   return (
     <div className="login-page-container">
       <form onSubmit={handleSubmit} className="login-card">
+      <Header />
         <h2 className="login-title">Login</h2>
         
         {error && (

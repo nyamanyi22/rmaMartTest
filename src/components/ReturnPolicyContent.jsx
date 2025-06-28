@@ -1,6 +1,6 @@
 // src/components/ReturnPolicyContent.jsx
 import React from 'react';
-import Header from './Top';
+import Header from '../components/header/index';
 import '../styles/ReturnPolicy.css';
 
 const ReturnPolicyContent = () => (
