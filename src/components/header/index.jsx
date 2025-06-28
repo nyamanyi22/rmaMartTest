@@ -60,7 +60,7 @@ const Header = () => {
         </div>
 
         <NavLink to="/account/profile" className="mobile-dropdown-item" onClick={() => setMenuOpen(false)}>Account</NavLink>
-        <NavLink to="/register" className="mobile-dropdown-item" onClick={() => setMenuOpen(false)}>Create Account</NavLink>
+        <NavLink to="/signup" className="mobile-dropdown-item" onClick={() => setMenuOpen(false)}>Create Account</NavLink>
         <NavLink to="/login" className="mobile-dropdown-item" onClick={() => setMenuOpen(false)}>Login</NavLink>
       </nav>
     </header>
