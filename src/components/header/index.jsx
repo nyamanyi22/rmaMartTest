@@ -39,12 +39,10 @@ const Header = () => {
           <NavLink to="/account/profile" className="nav-link">Account</NavLink>
         </nav>
 
-        <div className="auth-links">
-<<<<<<< HEAD
-          <NavLink to="/signup" className="auth-link signup">Create Account</NavLink>
-
-          <NavLink to="/login" className="auth-link login">Login</NavLink>
-        </div>
+<div className="auth-links">
+  <NavLink to="/signup" className="auth-link signup">Create Account</NavLink>
+  <NavLink to="/login" className="auth-link login">Login</NavLink>
+</div>
 
         <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <FaTimes /> : <FaBars />}
