@@ -1,17 +1,20 @@
-// src/components/PrivateRoute.jsx
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
 
-  // If user is not logged in, redirect to signup
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  // Wait until the auth check is complete
+  if (isLoading) {
+    return <div>Loading...</div>; // Or show a spinner
   }
 
-  // If user is logged in, show the protected component
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
   return children;
 };
 

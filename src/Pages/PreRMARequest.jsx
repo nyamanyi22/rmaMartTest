@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
+
 import ReturnPolicyContent from '../components/ReturnPolicyContent';
 
 const PreRequest = () => {
   const [agreed, setAgreed] = useState(false);
   const navigate = useNavigate();
+const { user } = useAuth();
+console.log("Current User in PreRequest:", user);
 
   const handleSubmit = () => {
     if (agreed) {

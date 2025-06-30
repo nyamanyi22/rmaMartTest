@@ -40,12 +40,15 @@ export function AuthProvider({ children }) {
       
       if (token) {
         try {
-          const userData = await verifyToken(token);
-          login(userData, token, false);
-        } catch (error) {
-          console.error('Token verification failed:', error);
-          logout();
-        }
+  const userData = await verifyToken(token);
+  localStorage.setItem('authToken', token);
+setAxiosAuthHeader(token);
+setUser(userData);
+setIsAuthenticated(true);
+} catch (error) {
+  console.error('Token verification failed:', error);
+  logout();
+}
       }
       setIsLoading(false);
     };
@@ -54,26 +57,38 @@ export function AuthProvider({ children }) {
   }, [verifyToken]);
 
   // Login function
-  const login = async (credentials, redirectPath = '/') => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await axios.post('http://127.0.0.1:8000/api/login', credentials);
-      const { user, token } = response.data;
-      
-      localStorage.setItem('authToken', token);
-      setAxiosAuthHeader(token);
-      setUser(user);
-      setIsAuthenticated(true);
-      navigate(redirectPath);
-    } catch (error) {
-      setError(error.response?.data?.message || 'Login failed');
-      throw error;
-    } finally {
-      setIsLoading(false);
+ // Login function (supports both credentials-based and direct login)
+const login = async (credentialsOrUser, redirectPath = '/', directToken = null) => {
+  try {
+    setIsLoading(true);
+    setError(null);
+
+    let user, token;
+
+    if (directToken) {
+      // 🔐 Already logged-in (like Sanctum) — no need to call backend again
+      user = credentialsOrUser;
+      token = directToken;
+    } else {
+      // 🛂 Login using credentials
+      const response = await axios.post('http://127.0.0.1:8000/api/login', credentialsOrUser);
+      user = response.data.user;
+      token = response.data.token;
     }
-  };
+
+    localStorage.setItem('authToken', token);
+    setAxiosAuthHeader(token);
+    setUser(user);
+    setIsAuthenticated(true);
+
+  } catch (error) {
+    setError(error.response?.data?.message || 'Login failed');
+    throw error;
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   // Logout function
   const logout = async () => {

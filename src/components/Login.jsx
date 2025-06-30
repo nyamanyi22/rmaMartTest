@@ -6,7 +6,6 @@ import axiosClient from '../axioClient';
 import Header from './header';
 const Login = () => {
   const { login } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
 
   // Get the path the user was trying to visit before being redirected to login
@@ -16,30 +15,26 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(null);
+  setIsLoading(true);
 
-    try {
-      // Request CSRF token for Sanctum
-      await axiosClient.get('/sanctum/csrf-cookie');
+  try {
+    await axiosClient.get('/sanctum/csrf-cookie'); // Request CSRF token (if needed)
+    
+    // ✅ Just call login from context — it handles the actual API request
+    await login(formData, from);
+    
+  } catch (err) {
+    console.error('Login failed:', err);
+    setError(err.response?.data?.message || 'Login failed. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+console.log("Form data being submitted to login:", formData);
 
-      // Send login request
-      const response = await axiosClient.post('/api/login', formData);
-
-      // Save user and token using context
-      login(response.data.customer, response.data.token);
-
-      // Redirect to original page
-      navigate(from);
-    } catch (err) {
-      console.error('Login failed:', err);
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="login-page-container">
