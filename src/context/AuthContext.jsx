@@ -29,6 +29,10 @@ export function AuthProvider({ children }) {
       });
       return response.data.user;
     } catch (error) {
+      // If token is invalid, clear it from storage
+      if (error.response?.status === 401) {
+        localStorage.removeItem('authToken');
+      }
       throw error;
     }
   }, []);
@@ -37,67 +41,91 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem('authToken');
+      const storedUser = localStorage.getItem('userData');
       
       if (token) {
         try {
-  const userData = await verifyToken(token);
-  localStorage.setItem('authToken', token);
-setAxiosAuthHeader(token);
-setUser(userData);
-setIsAuthenticated(true);
-} catch (error) {
-  console.error('Token verification failed:', error);
-  logout();
-}
+          // First try to verify the token with backend
+          const userData = await verifyToken(token);
+          setAxiosAuthHeader(token);
+          setUser(userData);
+          setIsAuthenticated(true);
+          // Update stored user data if needed
+          localStorage.setItem('userData', JSON.stringify(userData));
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          // Fallback to stored user data if verification fails but token exists
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+            setIsAuthenticated(true);
+          } else {
+            logout();
+          }
+        }
       }
       setIsLoading(false);
     };
 
     initializeAuth();
-  }, [verifyToken]);
+  }, [verifyToken, setAxiosAuthHeader]);
 
-  // Login function
- // Login function (supports both credentials-based and direct login)
-const login = async (credentialsOrUser, redirectPath = '/', directToken = null) => {
-  try {
-    setIsLoading(true);
-    setError(null);
+  // Login function (supports both credentials-based and direct login)
+  const login = async (credentialsOrUser, redirectPath = '/', directToken = null) => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-    let user, token;
+      let user, token;
 
-    if (directToken) {
-      // 🔐 Already logged-in (like Sanctum) — no need to call backend again
-      user = credentialsOrUser;
-      token = directToken;
-    } else {
-      // 🛂 Login using credentials
-      const response = await axios.post('http://127.0.0.1:8000/api/login', credentialsOrUser);
-      user = response.data.user;
-      token = response.data.token;
+      if (directToken) {
+        // Direct login with existing token
+        user = credentialsOrUser;
+        token = directToken;
+      } else {
+        // Normal credentials login
+        const response = await axios.post('http://127.0.0.1:8000/api/login', credentialsOrUser);
+        user = response.data.customer;
+        token = response.data.token;
+      }
+
+      // Store token and user data
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('userData', JSON.stringify(user));
+      
+      // Set auth state
+      setAxiosAuthHeader(token);
+      setUser(user);
+      setIsAuthenticated(true);
+      
+      // Redirect
+      navigate(redirectPath || '/');
+
+      return { user, token };
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 
+                         error.response?.data?.error || 
+                         'Login failed. Please try again.';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-
-    localStorage.setItem('authToken', token);
-    setAxiosAuthHeader(token);
-    setUser(user);
-    setIsAuthenticated(true);
-
-  } catch (error) {
-    setError(error.response?.data?.message || 'Login failed');
-    throw error;
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  };
 
   // Logout function
   const logout = async () => {
     try {
-      await axios.post('http://127.0.0.1:8000/api/logout');
+      // Only attempt server logout if we have a token
+      if (localStorage.getItem('authToken')) {
+        await axios.post('http://127.0.0.1:8000/api/logout');
+      }
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      // Clear client-side auth state regardless of server success
       localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
       clearAxiosAuthHeader();
       setUser(null);
       setIsAuthenticated(false);
@@ -112,19 +140,48 @@ const login = async (credentialsOrUser, redirectPath = '/', directToken = null) 
       setError(null);
       
       const response = await axios.post('http://127.0.0.1:8000/api/register', userData);
-      const { user, token } = response.data;
+      const { customer: user, token } = response.data;
       
+      // Store token and user data
       localStorage.setItem('authToken', token);
+      localStorage.setItem('userData', JSON.stringify(user));
+      
+      // Set auth state
       setAxiosAuthHeader(token);
       setUser(user);
       setIsAuthenticated(true);
+      
+      // Redirect
       navigate('/');
+
+      return { user, token };
+
     } catch (error) {
-      setError(error.response?.data?.errors || { message: 'Registration failed' });
-      throw error;
+      const errorMessage = error.response?.data?.message || 
+                         error.response?.data?.errors || 
+                         'Registration failed. Please try again.';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
+  };
+  //fetch user
+const fetchUser = async () => {
+  try {
+    const res = await axios.get('/api/profile');
+    setUser(res.data.user);
+  } catch (err) {
+    if (err.response?.status === 401 || err.response?.status === 419) {
+      setUser(null);
+    }
+  }
+};
+
+  // Update user data
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem('userData', JSON.stringify(updatedUser));
   };
 
   return (
@@ -136,6 +193,7 @@ const login = async (credentialsOrUser, redirectPath = '/', directToken = null) 
       login,
       logout,
       register,
+      updateUser,
       setError
     }}>
       {children}

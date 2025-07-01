@@ -19,7 +19,7 @@ const Login = () => {
   e.preventDefault();
   setError(null);
   setIsLoading(true);
-
+  console.log("Form data being submitted to login:", formData);
   try {
     await axiosClient.get('/sanctum/csrf-cookie'); // Request CSRF token (if needed)
     

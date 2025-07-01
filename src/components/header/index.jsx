@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-
-
+import { useAuth } from '../../context/AuthContext';
 import { NavLink } from 'react-router-dom';
-import { FaBars, FaTimes, FaChevronDown } from 'react-icons/fa';
+import { FaBars, FaTimes, FaChevronDown, FaUserCircle} from 'react-icons/fa';
 import logo from '../../assets/martLogo.png';
 import './styles.css';
 
@@ -17,7 +16,9 @@ const Header = () => {
      window.addEventListener('resize', handleResize);
   return () => window.removeEventListener('resize', handleResize);
   }, [menuOpen]);
-
+const { user, logout } = useAuth();
+const isAuthenticated = !!user;
+ 
   return (
     <header className="header">
       <div className="header-container">
@@ -38,11 +39,21 @@ const Header = () => {
           </div>
           <NavLink to="/account/profile" className="nav-link">Account</NavLink>
         </nav>
-
-<div className="auth-links">
-  <NavLink to="/signup" className="auth-link signup">Create Account</NavLink>
-  <NavLink to="/login" className="auth-link login">Login</NavLink>
-</div>
+ 
+  {isAuthenticated ? (
+          <div className="user-profile">
+            <div className="user-info">
+              <FaUserCircle className="user-icon" />
+              <span className="user-name">Hi, {user?.first_name || user?.firstName}</span>
+            </div>
+            <button onClick={logout} className="logout-btn">Logout</button>
+          </div>
+        ) : (
+          <div className="auth-links">
+            <NavLink to="/signup" className="auth-link signup">Create Account</NavLink>
+            <NavLink to="/login" className="auth-link login">Login</NavLink>
+          </div>
+        )}
 
         <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <FaTimes /> : <FaBars />}

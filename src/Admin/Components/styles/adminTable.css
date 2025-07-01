@@ -1,0 +1,130 @@
+.rma-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rma-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.rma-table th {
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  position: sticky;
+  top: 0;
+}
+
+.rma-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.rma-table tr:last-child td {
+  border-bottom: none;
+}
+
+.rma-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.rma-table tr.selected {
+  background-color: #e7f5ff;
+}
+
+/* Selection Column */
+.select-column {
+  width: 40px;
+  text-align: center;
+}
+
+/* Sortable Headers */
+.sortable {
+  cursor: pointer;
+}
+
+.sortable:hover {
+  background-color: #e9ecef;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-icon {
+  font-size: 12px;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-badge.completed {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+/* Action Buttons */
+.actions-cell {
+  white-space: nowrap;
+}
+
+.view-button {
+  background: none;
+  border: none;
+  color: #228be6;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
+.view-button:hover {
+  text-decoration: underline;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #868e96;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rma-table th, 
+  .rma-table td {
+    padding: 8px 12px;
+  }
+}

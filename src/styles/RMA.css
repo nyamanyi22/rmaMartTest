@@ -1,0 +1,258 @@
+/* Import Google Font - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Main Container Styles */
+.rma-form-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem; /* Increased vertical padding */
+    font-family: 'Inter', sans-serif; /* Applied Inter font */
+    color: #374151; /* Darker text for readability */
+    line-height: 1.6;
+}
+
+/* Card Styles */
+.rma-form-card,
+.rma-card {
+    background: white;
+    border-radius: 12px; /* Slightly more rounded corners */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Enhanced shadow */
+    padding: 2.5rem; /* Consistent padding */
+    margin-bottom: 2.5rem; /* Consistent spacing */
+    border: 1px solid #e5e7eb; /* Subtle border for definition */
+}
+
+/* Typography */
+.rma-form-title,
+.rma-title {
+    font-size: 2.25rem; /* Larger title */
+    font-weight: 700; /* Bolder */
+    color: #1dd369; /* Darker, more prominent title color */
+    margin-bottom: 1.75rem;
+    text-align: center;
+    letter-spacing: -0.025em; /* Slight letter spacing adjustment */
+}
+
+.rma-subtitle {
+    font-size: 1.125rem; /* Adjusted subtitle size */
+    color: #4b5563; /* Softer grey */
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.rma-details h3 {
+    font-size: 1.5rem; /* Larger heading for sections */
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 2rem; /* More space above sections */
+    margin-bottom: 1rem;
+    border-top: 1px solid #e0e7ff; /* Lighter, more subtle border */
+    padding-top: 1.5rem;
+}
+
+/* Form Grid Layout */
+.rma-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusted min-width for columns */
+    gap: 1.75rem; /* Slightly larger gap */
+    margin-bottom: 1.75rem;
+}
+
+/* Form Elements */
+label {
+    display: block;
+    margin-bottom: 0.625rem; /* Slightly more space */
+    font-weight: 600; /* Bolder label text */
+    color: #374151;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.875rem; /* Increased padding */
+    border: 1px solid #d1d5db; /* Softer border color */
+    border-radius: 8px; /* More rounded input fields */
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smoother transitions */
+    background-color: #f9fafb; /* Light background for inputs */
+    color: #1f2937;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #6366f1; /* Deeper blue on focus */
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25); /* More prominent focus shadow */
+    background-color: #ffffff; /* White background on focus */
+}
+
+textarea {
+    min-height: 140px; /* Slightly taller text area */
+    resize: vertical;
+}
+
+input[readonly] {
+    background-color: #e5e7eb; /* Clearer readonly state */
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* File Upload */
+input[type="file"] {
+    padding: 0.75rem;
+    border: 2px dashed #9ca3af; /* More visible dashed border */
+    border-radius: 8px;
+    width: 100%;
+    background-color: #f3f4f6; /* Light background for file input */
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.rma-image-preview {
+    max-width: 100%;
+    max-height: 250px; /* Slightly larger preview */
+    object-fit: contain; /* Ensures image fits within bounds */
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.rma-remove-button {
+    background: none;
+    border: none;
+    color: #ef4444; /* Brighter red for remove */
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding: 0.25rem 0.75rem;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    border-radius: 4px;
+}
+
+.rma-remove-button:hover {
+    text-decoration: none; /* Remove underline on hover */
+    background-color: #fecaca; /* Light red background on hover */
+    color: #b91c1c;
+}
+
+/* Buttons */
+.rma-button {
+    background-color: #4f46e5; /* Primary blue button */
+    color: white;
+    border: none;
+    border-radius: 8px; /* Consistent rounded corners */
+    padding: 1rem 2rem; /* More generous padding */
+    font-size: 1.125rem; /* Larger font size for button */
+    font-weight: 600; /* Bolder button text */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease; /* Smoother transitions */
+    width: 100%;
+    margin-top: 1.5rem;
+    letter-spacing: 0.025em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle button shadow */
+}
+
+.rma-button:hover {
+    background-color: #4338ca; /* Darker blue on hover */
+    transform: translateY(-1px); /* Slight lift effect */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.rma-button:disabled {
+    background-color: #9ca3af; /* Greyer disabled state */
+    cursor: not-allowed;
+    opacity: 0.7; /* Slightly transparent */
+    animation: pulse 1.5s infinite; /* Keep pulse animation */
+    transform: none; /* No lift when disabled */
+    box-shadow: none; /* No shadow when disabled */
+}
+
+/* Success State */
+.rma-success-icon {
+    font-size: 5rem; /* Larger icon */
+    color: #10b981; /* Brighter green */
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Error States */
+.rma-error-box {
+    background-color: #fee2e2; /* Softer red background */
+    color: #dc2626; /* Darker red text */
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #ef4444; /* More pronounced border */
+    font-size: 0.95rem;
+}
+
+.rma-error-text {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.35rem;
+    display: block;
+}
+
+input.error,
+select.error,
+textarea.error {
+    border-color: #ef4444; /* Red border for errors */
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); /* Red focus shadow for errors */
+}
+
+/* Warning/Unauthenticated State */
+.rma-warning {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background-color: #fffbeb; /* Light yellow background */
+    border-radius: 8px;
+    border: 1px solid #fcd34d; /* Yellow border */
+    color: #92400e;
+}
+
+.rma-error { /* Renamed for clarity, implies a general error message style */
+    color: #b91c1c; /* Deeper red for general errors */
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .rma-form-container {
+        padding: 1.5rem;
+    }
+    
+    .rma-form-card,
+    .rma-card {
+        padding: 1.5rem;
+    }
+    
+    .rma-grid {
+        grid-template-columns: 1fr; /* Single column layout on small screens */
+    }
+
+    .rma-form-title,
+    .rma-title {
+        font-size: 1.75rem;
+    }
+
+    .rma-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Animation for loading state */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
