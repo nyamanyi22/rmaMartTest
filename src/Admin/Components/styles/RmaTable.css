@@ -1,0 +1,210 @@
+/* ===== TABLE CONTAINER ===== */
+.rma-table-container {
+  width: 100%;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #fff;
+}
+
+/* Row height variations */
+.rma-table-container.compact table {
+  font-size: 0.85rem;
+}
+.rma-table-container.compact tr {
+  height: 36px;
+}
+.rma-table-container.large tr {
+  height: 56px;
+}
+
+/* ===== TABLE SCROLLING ===== */
+.table-scroll-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+/* ===== TABLE STRUCTURE ===== */
+.rma-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 600px; /* Ensures table doesn't collapse too much */
+}
+
+/* ===== TABLE HEADER ===== */
+.rma-table th {
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  position: sticky;
+  top: 0;
+  white-space: nowrap;
+}
+
+/* ===== TABLE CELLS ===== */
+.rma-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+.rma-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== INTERACTIVE STATES ===== */
+.rma-table tr:hover {
+  background-color: #f8f9fa;
+}
+.rma-table tr.selected {
+  background-color: #e7f5ff;
+}
+.rma-table tr.hovered {
+  background-color: #f5f5f5 !important;
+}
+
+/* ===== SELECTION COLUMN ===== */
+.select-column {
+  width: 40px;
+  text-align: center;
+}
+
+/* ===== SORTABLE HEADERS ===== */
+.sortable {
+  cursor: pointer;
+}
+.sortable:hover {
+  background-color: #e9ecef;
+}
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sort-icon {
+  font-size: 12px;
+}
+
+/* ===== STATUS INDICATORS ===== */
+.status-container {
+  display: flex;
+  align-items: center;
+}
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.status-badge.pending,
+.status-select.Pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #ffc107;
+}
+.status-badge.approved,
+.status-select.Approved {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #28a745;
+}
+.status-badge.rejected,
+.status-select.Rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-color: #dc3545;
+}
+.status-badge.completed,
+.status-select.Completed {
+  background-color: #cce5ff;
+  color: #004085;
+  border-color: #007bff;
+}
+
+/* Status select dropdown */
+.status-select {
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid currentColor;
+  background: white;
+  cursor: pointer;
+  font-size: inherit;
+  max-width: 100%;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.actions-cell {
+  white-space: nowrap;
+}
+.view-button {
+  background: none;
+  border: none;
+  color: #228be6;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+.view-button:hover {
+  text-decoration: underline;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #868e96;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 8px;
+}
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  .rma-table th, 
+  .rma-table td {
+    padding: 8px 12px;
+  }
+  
+  .rma-table-container {
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid #e9ecef;
+  }
+  
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

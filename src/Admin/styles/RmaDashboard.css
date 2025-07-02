@@ -1,0 +1,576 @@
+/* Variables for easy theming */
+:root {
+    --primary-color: #4F46E5; /* Indigo */
+    --secondary-color: #6366F1; /* Lighter Indigo */
+    --accent-color: #22C55E; /* Green for success/approval */
+    --danger-color: #EF4444; /* Red for errors/rejection */
+    --warning-color: #F59E0B; /* Orange for pending */
+
+    --text-dark: #1E293B;
+    --text-medium: #475569;
+    --text-light: #64748B;
+    --border-color: #E2E8F0;
+    --background-light: #F8FAFC;
+    --background-white: #FFFFFF;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Inter', sans-serif; /* Recommend using Inter font or similar modern sans-serif */
+    background-color: var(--background-light);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Main Layout */
+.rma-dashboard {
+    padding: 30px 20px; /* More vertical padding */
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: var(--background-light); /* Ensure background consistency */
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px; /* Increased margin */
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 28px; /* Slightly larger title */
+    color: var(--text-dark);
+    font-weight: 700; /* Bolder title */
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px; /* Space between header buttons */
+}
+
+/* Filter Section */
+.filter-section {
+    background: var(--background-white);
+    padding: 25px; /* More padding */
+    border-radius: 12px; /* Softer corners */
+    box-shadow: var(--shadow-md); /* More pronounced, softer shadow */
+    margin-bottom: 25px; /* Increased margin */
+    border: 1px solid var(--border-color); /* Subtle border */
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filter-header h2 {
+    font-size: 18px;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 20px;
+    margin-bottom: 20px; /* Adjusted margin */
+}
+
+.filter-row:last-child {
+    margin-bottom: 0;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 220px; /* Slightly larger min-width for inputs */
+    max-width: calc(33.33% - 14px); /* Three columns on larger screens */
+}
+
+@media (max-width: 900px) {
+    .filter-group {
+        max-width: calc(50% - 10px); /* Two columns */
+    }
+}
+
+@media (max-width: 600px) {
+    .filter-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .filter-group {
+        max-width: 100%; /* Single column */
+        min-width: unset;
+    }
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 8px; /* More space */
+    font-weight: 600; /* Slightly bolder labels */
+    color: var(--text-medium);
+    font-size: 14px;
+}
+
+.search-input,
+.status-select,
+.date-input {
+    width: 100%;
+    padding: 10px 14px; /* More padding for better feel */
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Softer borders */
+    font-size: 15px;
+    color: var(--text-dark);
+    background-color: var(--background-white);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition */
+    -webkit-appearance: none; /* Remove default browser styling for selects */
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.search-input:focus,
+.status-select:focus,
+.date-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Focus ring */
+    outline: none;
+}
+
+.status-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem; /* Make space for the custom arrow */
+}
+
+
+.date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Slightly more gap */
+}
+
+.date-inputs span {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+/* Buttons */
+.reset-btn,
+.export-btn,
+.view-btn,
+.pagination-btn,
+.retry-button,
+.bulk-status-select {
+    font-family: 'Inter', sans-serif;
+    padding: 10px 18px; /* Consistent padding */
+    border-radius: 8px; /* Softer corners */
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease; /* Smooth transitions for all buttons */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Specific Button Styles */
+.reset-btn {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+}
+
+.reset-btn:hover:not(:disabled) {
+    background: #DC2626; /* Darker red on hover */
+    box-shadow: var(--shadow-sm);
+}
+
+.reset-btn:disabled {
+    background: #CBD5E1;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.export-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.export-btn:hover:not(:disabled) {
+    background: var(--secondary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.export-btn:disabled {
+    background: #CBD5E1;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.view-btn {
+    background: none;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 6px 12px; /* Smaller padding for table action */
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.view-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.retry-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    margin-top: 20px;
+}
+
+.retry-button:hover {
+    background: var(--secondary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Bulk Actions */
+.bulk-actions {
+    background: var(--background-white);
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid var(--border-color);
+}
+
+.bulk-actions span {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.bulk-status-select {
+    flex-grow: 0; /* Don't take up too much space */
+    width: auto; /* Adjust width based on content */
+    border: 1px solid var(--border-color);
+    background-color: var(--background-white);
+    color: var(--text-dark);
+    font-size: 15px;
+}
+
+.bulk-status-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    outline: none;
+}
+
+
+/* Error State */
+.error-container {
+    background: #FEE2E2; /* Lighter red background */
+    padding: 25px;
+    border-radius: 12px;
+    color: #B91C1C; /* Darker red text */
+    margin: 30px auto; /* Centered, larger margin */
+    max-width: 800px;
+    text-align: center;
+    border: 1px solid #FCA5A5; /* Red border */
+    box-shadow: var(--shadow-sm);
+}
+
+.error-container h2 {
+    font-size: 22px;
+    color: #B91C1C;
+    margin-bottom: 10px;
+}
+
+.error-container p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Loading State - For RmaTable specifically */
+.rma-table-container .loading-overlay {
+    position: absolute; /* Needed if table container is relative */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Remove padding as it's an overlay */
+    z-index: 10; /* Ensure it's on top */
+    border-radius: 12px; /* Match table container */
+}
+
+.loading-spinner {
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-color); /* Blue spinner */
+    border-radius: 50%;
+    width: 40px; /* Slightly larger spinner */
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+.loading-overlay p {
+    margin-top: 15px;
+    color: var(--text-medium);
+    font-size: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 50px; /* More padding */
+    color: var(--text-light);
+    font-size: 17px;
+    background-color: var(--background-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px dashed var(--border-color); /* Dashed border for empty state */
+    margin-top: 20px; /* Space from filters */
+}
+
+/* Pagination - Assumed to be in a separate Pagination.css or similar */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.pagination-btn {
+    background: var(--background-white);
+    color: var(--text-medium);
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.pagination-btn:hover:not(:disabled):not(.active) {
+    background: var(--background-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.pagination-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--background-light);
+}
+
+/* Footer summary text */
+.mt-2.text-sm.text-gray-600.text-center {
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+/* RmaTable.css (Styles for the actual table) */
+/* --- This should be in RmaTable.css --- */
+.rma-table-container {
+    background: var(--background-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden; /* Ensures rounded corners apply to content */
+    position: relative; /* For loading overlay positioning */
+    border: 1px solid var(--border-color);
+}
+
+.table-wrapper {
+    overflow-x: auto; /* Enables horizontal scrolling for narrow screens */
+}
+
+.rma-table {
+    width: 100%;
+    border-collapse: separate; /* Allows border-radius on cells if needed, or spacing */
+    border-spacing: 0;
+    min-width: 700px; /* Ensure table doesn't get too squished */
+}
+
+.rma-table thead {
+    background-color: var(--background-light);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rma-table th {
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-medium);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: relative;
+}
+
+.rma-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.rma-table th .header-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rma-table th .sort-icon {
+    font-size: 1.1em;
+    line-height: 1;
+    color: var(--text-light);
+    transition: color 0.2s ease;
+}
+
+.rma-table th.sortable:hover .sort-icon {
+    color: var(--primary-color);
+}
+
+.rma-table th.active .sort-icon {
+    color: var(--primary-color); /* Active sort icon color */
+}
+
+
+.rma-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.rma-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.rma-table tbody tr:hover:not(.selected) {
+    background-color: #F8FAFC; /* Subtle hover effect */
+    cursor: pointer;
+}
+
+.rma-table tbody tr.selected {
+    background-color: #EEF2FF; /* Light blue for selected rows */
+    border-color: var(--primary-color);
+}
+
+.rma-table td {
+    padding: 15px 20px;
+    color: var(--text-dark);
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+/* Checkbox Column */
+.rma-table th.select-column,
+.rma-table td.select-column {
+    width: 40px; /* Fixed width for checkbox column */
+    padding-left: 15px;
+    padding-right: 5px;
+    text-align: center;
+}
+
+.rma-table td .checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color); /* Colors the checkbox itself */
+}
+
+/* Custom cell styling */
+.rma-number {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: white; /* Default text color for badges */
+    box-shadow: var(--shadow-sm); /* Slight shadow for badge */
+}
+
+/* Specific Status Badge Colors */
+.status-badge.status-pending {
+    background-color: var(--warning-color);
+}
+.status-badge.status-approved {
+    background-color: var(--accent-color);
+}
+.status-badge.status-rejected {
+    background-color: var(--danger-color);
+}
+.status-badge.status-shipped {
+    background-color: #0EA5E9; /* Sky blue */
+}
+.status-badge.status-completed {
+    background-color: #8B5CF6; /* Violet */
+}
+/* Add more statuses as needed */
+
+.actions-cell {
+    white-space: nowrap; /* Prevent buttons from wrapping */
+}
+
+/* Table info / Summary above table */
+.rma-table-container .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-white);
+}
+
+.rma-table-container .results-info {
+    font-size: 14px;
+    color: var(--text-medium);
+    font-weight: 500;
+}
+
+.rma-table-container .selection-info {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+/* Additional utility class for spacing from the previous response */
+.mt-2 {
+    margin-top: 8px;
+}
+.text-sm {
+    font-size: 0.875rem; /* 14px */
+}
+.text-gray-600 {
+    color: #4B5563;
+}
+.text-center {
+    text-align: center;
+}

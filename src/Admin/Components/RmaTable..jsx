@@ -1,11 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import './RmaTable.css';
 
 const RmaTable = ({
   data = [],
-  selectedItems = [],
-  onSelectItems,
-  onViewItem,
   columns = [
     { key: 'rmaNumber', label: 'RMA Number', sortable: true },
     { key: 'customer.name', label: 'Customer', sortable: true },
@@ -13,38 +11,45 @@ const RmaTable = ({
     { key: 'dateCreated', label: 'Date Created', sortable: true },
     { key: 'actions', label: 'Actions', sortable: false }
   ],
+  isLoading = false,
   selectable = true,
+  selectedItems = [],
+  onSelectItems = () => {},
+  onRowClick = () => {},
+  onViewItem = () => {},
   className = '',
-  emptyState = <div className="empty-state">No data available</div>,
-  onRowClick
+  emptyState = <div className="empty-state">No data available</div>
 }) => {
   const [sortConfig, setSortConfig] = useState({ 
     key: 'dateCreated', 
     direction: 'desc' 
   });
 
-  const getNestedValue = (obj, path) => {
-    return path.split('.').reduce((o, p) => (o || {})[p], obj);
-  };
+  const sortedData = useMemo(() => {
+    const sortableData = [...data];
+    if (!sortConfig) return sortableData;
 
-  const sortedData = [...data].sort((a, b) => {
-    const aValue = getNestedValue(a, sortConfig.key);
-    const bValue = getNestedValue(b, sortConfig.key);
-    
-    if (aValue === undefined) return 1;
-    if (bValue === undefined) return -1;
-    
-    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-    return 0;
-  });
+    return sortableData.sort((a, b) => {
+      const aValue = getNestedValue(a, sortConfig.key);
+      const bValue = getNestedValue(b, sortConfig.key);
+      
+      if (aValue === undefined) return 1;
+      if (bValue === undefined) return -1;
+      
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [data, sortConfig]);
+
+  const getNestedValue = (obj, path) => 
+    path.split('.').reduce((o, p) => (o || {})[p], obj);
 
   const requestSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
   };
 
   const toggleSelection = (itemId) => {
@@ -59,19 +64,14 @@ const RmaTable = ({
   };
 
   const handleRowClick = (item, e) => {
-    if (onRowClick) {
-      // Ignore clicks on checkboxes or actions
-      if (e.target.tagName !== 'INPUT' && !e.target.closest('.actions-cell')) {
-        onRowClick(item);
-      }
+    if (!e.target.closest('input, button, .actions-cell')) {
+      onRowClick(item);
     }
   };
 
   const renderCellContent = (item, column) => {
-    if (column.render) {
-      return column.render(getNestedValue(item, column.key), item);
-    }
-
+    if (column.render) return column.render(getNestedValue(item, column.key), item);
+    
     switch (column.key) {
       case 'status':
         return (
@@ -84,12 +84,7 @@ const RmaTable = ({
       case 'actions':
         return (
           <div className="actions-cell">
-            <button 
-              onClick={() => onViewItem(item)}
-              className="view-button"
-            >
-              View
-            </button>
+            <button onClick={() => onViewItem(item)}>View</button>
           </div>
         );
       default:
@@ -99,16 +94,19 @@ const RmaTable = ({
 
   return (
     <div className={`rma-table-container ${className}`}>
+      {isLoading && <div className="loading-overlay">Loading...</div>}
+      
       {data.length === 0 ? (
         emptyState
       ) : (
         <table className="rma-table">
+          {/* Table header */}
           <thead>
             <tr>
               {selectable && (
                 <th className="select-column">
                   <input 
-                    type="checkbox" 
+                    type="checkbox"
                     onChange={toggleSelectAll}
                     checked={selectedItems.length === data.length && data.length > 0}
                   />
@@ -119,13 +117,14 @@ const RmaTable = ({
                   key={column.key}
                   onClick={() => column.sortable && requestSort(column.key)}
                   className={column.sortable ? 'sortable' : ''}
-                  style={{ width: column.width || 'auto' }}
                 >
                   <div className="header-content">
                     {column.label}
-                    {column.sortable && sortConfig.key === column.key && (
+                    {column.sortable && (
                       <span className="sort-icon">
-                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                        {sortConfig.key === column.key 
+                          ? (sortConfig.direction === 'asc' ? '↑' : '↓')
+                          : '↕'}
                       </span>
                     )}
                   </div>
@@ -133,6 +132,8 @@ const RmaTable = ({
               ))}
             </tr>
           </thead>
+          
+          {/* Table body */}
           <tbody>
             {sortedData.map(item => (
               <tr 
@@ -153,7 +154,7 @@ const RmaTable = ({
                 {columns.map(column => (
                   <td 
                     key={`${item.id}-${column.key}`}
-                    className={`${column.key}-cell ${column.key === 'actions' ? 'actions-cell' : ''}`}
+                    className={`${column.key}-cell`}
                   >
                     {renderCellContent(item, column)}
                   </td>
@@ -165,6 +166,26 @@ const RmaTable = ({
       )}
     </div>
   );
+};
+
+RmaTable.propTypes = {
+  data: PropTypes.array,
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      sortable: PropTypes.bool,
+      render: PropTypes.func
+    })
+  ),
+  isLoading: PropTypes.bool,
+  selectable: PropTypes.bool,
+  selectedItems: PropTypes.array,
+  onSelectItems: PropTypes.func,
+  onRowClick: PropTypes.func,
+  onViewItem: PropTypes.func,
+  className: PropTypes.string,
+  emptyState: PropTypes.node
 };
 
 export default RmaTable;
