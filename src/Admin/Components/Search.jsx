@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import RmaFilters from './RmaFilters';
 import RmaTable from './RmaTable';
-import { fetchRmas } from '../services/rmaService';
+import { fetchRmas } from '../rmaService';
 import { useDebounce } from '../hooks/useDebounce';
-import './RmaSearch.css';
+import './styles/RmaSearch.css';
 
 const RmaSearch = () => {
   const [filters, setFilters] = useState({

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import RmaFilters from './RmaFilters';
-import RmaTable from './RmaTable';
+import RmaFilters from '../Components/RmaFilters';
+import RmaTable from '../Components/RmaTable';
 import { fetchRmas } from '../services/rmaService';
 import { useDebounce } from '../hooks/useDebounce';
-import './RmaSearch.css';
+import './styles/RmaSearch.css';
 
 const RmaSearch = () => {
   const [filters, setFilters] = useState({
@@ -66,7 +66,9 @@ const RmaSearch = () => {
 
   return (
     <div className="rma-search-container">
-      <div className="search-header">
+    
+     <div className="search-header">
+    
         <h2>RMA Management</h2>
         <div className="header-actions">
           <button className="export-btn" onClick={() => exportToCSV(rmas)}>
@@ -132,6 +134,7 @@ const RmaSearch = () => {
           </div>
         </div>
       )}
+        
     </div>
   );
 };

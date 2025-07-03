@@ -175,7 +175,7 @@ const fetchUser = async () => {
     if (err.response?.status === 401 || err.response?.status === 419) {
       setUser(null);
     }
-  }
+  } 
 };
 
   // Update user data

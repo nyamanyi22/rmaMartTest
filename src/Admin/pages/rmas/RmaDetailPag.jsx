@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './styles/rmadetails.css'; // optional styling
+import './styles/rmadetails.css';
+
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -64,6 +65,7 @@ const RmaDetailPage = () => {
 
   return (
     <div className="rma-detail-page">
+    
       <h1>RMA Detail - #{rma.rmaNumber}</h1>
 
       <section className="info-section">
@@ -102,6 +104,7 @@ const RmaDetailPage = () => {
       </section>
 
       <button onClick={() => navigate('/admin/rmas')} className="back-btn">← Back to Dashboard</button>
+     
     </div>
   );
 };

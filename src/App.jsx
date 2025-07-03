@@ -8,7 +8,10 @@ import Login from './components/Login';
 import { Routes, Route } from 'react-router-dom';
 import PreRequest from './Pages/PreRMARequest';
 import RMARequest from './Pages/RMARequest';
-import PrivateRoute from './components/PrivateRoute'; // Import your PrivateRoute component
+import PrivateRoute from './components/PrivateRoute'; 
+// Admin Routes
+import AdminRoutes from './Admin/adminRoutes';
+
 function App() {
   return (
     <AuthProvider>
@@ -21,8 +24,14 @@ function App() {
       {/* Private route for RMARequest */}
 <Route path="/PreRequest" element={<PrivateRoute><PreRequest /></PrivateRoute>} />
 <Route path="/RMARequest" element={<PrivateRoute><RMARequest /></PrivateRoute>} />
-     
+
+      {/* Admin Routes */}
+    
+        {/* Admin Routes */}
+        {AdminRoutes()}
+    
     </Routes>
+  
     </AuthProvider>
   );
 }

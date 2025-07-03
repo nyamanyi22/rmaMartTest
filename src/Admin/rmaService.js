@@ -57,3 +57,19 @@ export const updateRmaStatus = async (rmaId, newStatus) => {
     throw error;
   }
 };
+// In your rmaService.js
+export const exportRmas = async (rmaIds = null) => {
+  // In a real implementation, this would call your API
+  return new Promise((resolve) => {
+    // Simulate API delay
+    setTimeout(() => {
+      // Mock Excel file creation
+      const csvContent = rmaIds 
+        ? `RMA ID,Status\n${rmaIds.map(id => `${id},pending`).join('\n')}`
+        : 'RMA ID,Status,Customer\n1,pending,John Doe\n2,approved,Jane Smith';
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      resolve(blob);
+    }, 1000);
+  });
+};

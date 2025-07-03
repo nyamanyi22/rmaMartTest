@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import RmaTable from './components/RmaTable'; // This will be the enhanced RmaTable
-import RmaFilters from './components/RmaFilters'; // Assuming you have this
-import Pagination from './components/Pagination'; // Assuming you have this
-import StatusBadge from './components/StatusBadge'; // Assuming you have this
-import { fetchRmas, updateRmaStatus } from './services/rmaService'; // Your service file
+import RmaTable from '../../Components/RmaTable'; // This will be the enhanced RmaTable
+import RmaFilters from '../../Components/RmaFilters'; // Assuming you have this
+import Pagination from '../../Components/Pagination' ; // Assuming you have this
+import StatusBadge from '../../Components/StatusBadge'; // Assuming you have this
+import { fetchRmas } from './services/rmaService'; 
 import './styles/RmaDashboard.css';
+
 
 // This function will likely be defined elsewhere or handled by a utility.
 // For now, let's keep a placeholder.
@@ -174,6 +175,7 @@ const RmaDashboard = () => {
 
   return (
     <div className="rma-dashboard">
+    
       <header className="dashboard-header">
         <h1>RMA Management</h1>
         <div className="header-actions">
@@ -256,6 +258,7 @@ const RmaDashboard = () => {
       <div className="mt-2 text-sm text-gray-600 text-center">
         Showing {data.rmas.length} of {data.pagination.totalItems} RMAs
       </div>
+ 
     </div>
   );
 };

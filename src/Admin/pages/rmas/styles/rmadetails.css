@@ -1,0 +1,174 @@
+/* rmadetails.css */
+
+/* General Page Layout */
+.rma-detail-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    padding: 20px;
+    max-width: 900px; /* Limit content width for better readability */
+    margin: 20px auto; /* Center the page */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.rma-detail-page h1 {
+    font-size: 2.2em;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    text-align: center;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 15px;
+}
+
+/* Section Styling */
+.info-section {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.info-section h2 {
+    font-size: 1.6em;
+    color: #34495e;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #e9ecef;
+    padding-bottom: 10px;
+}
+
+.info-section p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.info-section p strong {
+    color: #555;
+    min-width: 120px; /* Align labels */
+    display: inline-block;
+}
+
+/* Status Management Section */
+.status-management {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between elements */
+}
+
+.status-select,
+.note-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    margin-bottom: 10px; /* Space below inputs */
+}
+
+.status-select {
+    appearance: none; /* Remove default select arrow */
+    background-color: #f8f8f8;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2C114.7L159.2%2C242.5c-4.5%2C4.5-10.9%2C6.9-17.7%2C6.9s-13.2-2.4-17.7-6.9L5.4%2C114.7c-9.1-9.1-9.1-23.7%2C0-32.8c9.1-9.1%2C23.7-9.1%2C32.8%2C0l119%2C118.9l118.9-118.9c9.1-9.1%2C23.7-9.1%2C32.8%2C0C296.1%2C91%2C296.1%2C105.6%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 1em;
+    padding-right: 30px; /* Make space for the arrow */
+    cursor: pointer;
+}
+
+.note-textarea {
+    min-height: 100px; /* Make textarea larger */
+    resize: vertical; /* Allow vertical resizing only */
+}
+
+/* Buttons */
+.update-btn,
+.back-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none; /* For back-btn which might be a link */
+    text-align: center;
+}
+
+.update-btn {
+    background-color: #28a745; /* Green for update */
+    color: white;
+    border: none;
+    margin-right: 15px; /* Space between buttons */
+}
+
+.update-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.back-btn {
+    background-color: #007bff; /* Blue for back */
+    color: white;
+    border: none;
+    margin-top: 20px; /* Space above back button */
+}
+
+.back-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Loading and Error States */
+.loading, .error {
+    text-align: center;
+    font-size: 1.5em;
+    color: #666;
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.error {
+    color: #dc3545;
+}
+
+/* Responsive Adjustments (Optional but Recommended) */
+@media (max-width: 768px) {
+    .rma-detail-page {
+        padding: 15px;
+        margin: 10px;
+    }
+
+    .rma-detail-page h1 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+
+    .info-section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .info-section h2 {
+        font-size: 1.4em;
+        margin-bottom: 10px;
+    }
+
+    .info-section p {
+        font-size: 1em;
+    }
+
+    .update-btn,
+    .back-btn {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}

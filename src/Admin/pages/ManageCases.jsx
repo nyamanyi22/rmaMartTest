@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import RmaTable from './RmaTable';
+import RmaTable  from './RmaTable';
 import './RmaSearch.css';
 
 export default function RmaSearch() {

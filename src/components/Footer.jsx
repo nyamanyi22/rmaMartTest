@@ -1,6 +1,7 @@
 import React from 'react';  
 import { FaHome, FaEnvelope, FaUserShield } from 'react-icons/fa';
 import '../styles/Footer.css'; // Import the CSS file for styling
+import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="footer">
@@ -21,19 +22,12 @@ const Footer = () => {
   <span>Visit our main site</span>
 </a>
 
-          <a href="/contact" className="footer-link">
-            <FaEnvelope className="footer-icon" />
-            <span>Contact Us</span>
-          </a>
-         <a
-  href="https://martrma.returnsportal.net/admin/AdminLogin.aspx"
-  className="footer-link"
-  target="_blank"
-  rel="noopener noreferrer"
->
+<Link to="/admin/dashboard" className="footer-link">
   <FaUserShield className="footer-icon" />
   <span>Admin</span>
-</a>
+</Link>
+
+
 
         </div>
         <div className="footer-copyright">
