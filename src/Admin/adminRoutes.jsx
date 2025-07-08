@@ -1,15 +1,15 @@
 import { Outlet, Route } from 'react-router-dom';
 import AdminLayout from './Components/AdminLayout';
 import RmaDashboard from './pages/rmas/RmaDashboard';
-import RmaDetailPage from './pages/rmas/RmaDetailPage';
+import RmaDetailPage from './pages/rmas/RmaDetailPag';
 import RejectedRmas from './pages/rmas/RejectedRmas';
 import PendingRmas from './pages/rmas/PendingRmas';
 import ApprovedRmas from './pages/rmas/ApprovedRmas';
 import BulkManagement from './pages/rmas/BulkManagement';
-import ProcessingRmas from './pages/rmas/ProcessingRmas';
+import ProcessingRmas from './pages/rmas/Processing';
 import ManageCases from './pages/cases/ManageCases';
 import AdminCustomerList from './pages/customers/AdminCustomerList';
-import AdminCreateCustomer from './pages/customers/AdminCreateCustomer';
+import AdminCreateCustomer from './pages/customers/CustomerForm';
 
 export default function AdminRoutes() {
   return (

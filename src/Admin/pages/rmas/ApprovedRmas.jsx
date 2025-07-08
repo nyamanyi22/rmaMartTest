@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import RmaTable from './RmaTable';
-import { fetchRmas } from '../rmaService';
-import { useDebounce } from '../hooks/useDebounce';
+import RmaTable from '../../Components/RmaTable';
+import { fetchRmas } from '../../rmaService';
+import { useDebounce } from '../../hooks/useDebounce';
 import Pagination from '../../Components/Pagination';
-import RefreshIcon from '../../assets/icons/refresh.svg';
-import SearchIcon from '../../assets/icons/search.svg';
-import './ApprovedRmas.css'; // Optional: create this CSS file for styles
+import { HiArrowPath, HiArrowDownTray } from 'react-icons/hi2';
+
+import './styles/ApprovedRmas.css'; // Optional: create this CSS file for styles
 
 const ApprovedRmas = () => {
   const [search, setSearch] = useState('');
@@ -71,71 +71,71 @@ const ApprovedRmas = () => {
     setRefreshToken(Date.now());
   }, []);
 
-  return (
-    <div className="approved-rmas-container">
-      <div className="header-row">
-        <div className="title-section">
-          <h2>Approved RMAs</h2>
-          <button 
-            onClick={handleRefresh} 
-            className="refresh-button"
-            disabled={isLoading}
-          >
-            <img src={RefreshIcon} alt="Refresh" />
-          </button>
-        </div>
-
-        <div className="controls-section">
-          <div className="search-container">
-            <img src={SearchIcon} alt="Search" className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search approved RMAs..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="search-input"
-              disabled={isLoading}
-            />
-          </div>
-        </div>
+return (
+  <div className="approved-rmas-container">
+    <div className="header-row">
+      <div className="title-section">
+        <h2>Approved RMAs</h2>
+        <button 
+          onClick={handleRefresh} 
+          className="refresh-button"
+          disabled={isLoading}
+        >
+          <HiArrowPath size={20} className="icon" />
+        </button>
       </div>
 
-      {error ? (
-        <div className="error-message">
-          {error}
-          <button onClick={handleRefresh}>Retry</button>
-        </div>
-      ) : (
-        <RmaTable
-          data={rmas}
-          isLoading={isLoading}
-          sortConfig={sort}
-          onSort={handleSort}
-          onRowClick={(rma) => console.log('Clicked RMA:', rma)}
-          emptyMessage={
-            isLoading ? 'Loading RMAs...' : 
-            debouncedSearch ? 'No matching approved RMAs found' : 
-            'No approved RMAs available'
-          }
-        />
-      )}
-
-      {pagination.total > 0 && (
-        <div className="pagination-container">
-          <Pagination
-            currentPage={pagination.page}
-            totalPages={Math.ceil(pagination.total / pagination.perPage)}
-            onPageChange={handlePageChange}
+      <div className="controls-section">
+        <div className="search-container">
+          <HiMagnifyingGlass size={18} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search approved RMAs..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
             disabled={isLoading}
           />
-          <div className="results-count">
-            Showing {(pagination.page - 1) * pagination.perPage + 1}-
-            {Math.min(pagination.page * pagination.perPage, pagination.total)} of {pagination.total} RMAs
-          </div>
         </div>
-      )}
+      </div>
     </div>
-  );
-};
+
+    {error ? (
+      <div className="error-message">
+        {error}
+        <button onClick={handleRefresh}>Retry</button>
+      </div>
+    ) : (
+      <RmaTable
+        data={rmas}
+        isLoading={isLoading}
+        sortConfig={sort}
+        onSort={handleSort}
+        onRowClick={(rma) => console.log('Clicked RMA:', rma)}
+        emptyMessage={
+          isLoading ? 'Loading RMAs...' : 
+          debouncedSearch ? 'No matching approved RMAs found' : 
+          'No approved RMAs available'
+        }
+      />
+    )}
+
+    {pagination.total > 0 && (
+      <div className="pagination-container">
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={Math.ceil(pagination.total / pagination.perPage)}
+          onPageChange={handlePageChange}
+          disabled={isLoading}
+        />
+        <div className="results-count">
+          Showing {(pagination.page - 1) * pagination.perPage + 1}-
+          {Math.min(pagination.page * pagination.perPage, pagination.total)} of {pagination.total} RMAs
+        </div>
+      </div>
+    )}
+  </div>
+);
+}
 
 export default ApprovedRmas;

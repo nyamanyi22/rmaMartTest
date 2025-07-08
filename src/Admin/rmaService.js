@@ -1,4 +1,20 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+import axios from 'axios';
+
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+
+export const bulkUpdateRma = async (ids, newStatus) => {
+  console.log(`[MOCK] Updating status to "${newStatus}" for IDs:`, ids);
+  
+  // Simulate network delay
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ message: `Mock: Updated ${ids.length} RMAs to status "${newStatus}"` });
+    }, 1000);
+  });
+};
+
 
 export const fetchRmas = async ({ page = 1, limit = 20, filters = {} }) => {
   const queryParams = new URLSearchParams({

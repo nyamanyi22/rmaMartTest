@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './RmaFilters.css';
+import './styles/RmaFilters.css'; // Adjust the path as necessary
 
 const RmaFilters = ({ 
   filters, 

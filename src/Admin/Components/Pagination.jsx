@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { HiChevronDoubleLeft, HiChevronLeft, HiChevronRight, HiChevronDoubleRight } from 'react-icons/hi2';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const getPageNumbers = () => {
@@ -16,9 +17,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <button
           key={i}
           onClick={() => onPageChange(i)}
-          className={`mx-1 px-3 py-1 rounded ${i === currentPage 
-            ? 'bg-blue-600 text-white' 
-            : 'bg-white border border-gray-300'}`}
+          className={`mx-1 px-3 py-1 rounded transition 
+            ${i === currentPage 
+              ? 'bg-blue-600 text-white font-medium' 
+              : 'bg-white border border-gray-300 hover:bg-gray-100'}`}
+          aria-current={i === currentPage ? 'page' : undefined}
         >
           {i}
         </button>
@@ -32,33 +35,39 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
-        className="px-3 py-1 mx-1 border rounded disabled:opacity-50"
+        className="mx-1 p-1 border rounded disabled:opacity-50"
+        aria-label="First page"
       >
-        «
+        <HiChevronDoubleLeft />
       </button>
+
       <button
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
-        className="px-3 py-1 mx-1 border rounded disabled:opacity-50"
+        className="mx-1 p-1 border rounded disabled:opacity-50"
+        aria-label="Previous page"
       >
-        ‹
+        <HiChevronLeft />
       </button>
-      
+
       {getPageNumbers()}
 
       <button
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 mx-1 border rounded disabled:opacity-50"
+        className="mx-1 p-1 border rounded disabled:opacity-50"
+        aria-label="Next page"
       >
-        ›
+        <HiChevronRight />
       </button>
+
       <button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 mx-1 border rounded disabled:opacity-50"
+        className="mx-1 p-1 border rounded disabled:opacity-50"
+        aria-label="Last page"
       >
-        »
+        <HiChevronDoubleRight />
       </button>
     </div>
   );

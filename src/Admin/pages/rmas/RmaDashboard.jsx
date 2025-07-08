@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import RmaTable from '../../Components/RmaTable'; // This will be the enhanced RmaTable
-import RmaFilters from '../../Components/RmaFilters'; // Assuming you have this
-import Pagination from '../../Components/Pagination' ; // Assuming you have this
-import StatusBadge from '../../Components/StatusBadge'; // Assuming you have this
-import { fetchRmas } from './services/rmaService'; 
+import RmaTable from '../../Components/RmaTable'; 
+import RmaFilters from '../../Components/RmaFilters'; 
+import Pagination from '../../Components/Pagination' ; 
+import StatusBadge from '../../Components/StatusBadge'; 
+import { fetchRmas } from '../../rmaService'; 
 import './styles/RmaDashboard.css';
 
 

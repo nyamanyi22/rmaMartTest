@@ -342,3 +342,39 @@
     gap: 10px;
   }
 }
+.refresh-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 10px;
+}
+
+.refresh-button .icon {
+  color: #444;
+  transition: transform 0.2s ease;
+}
+
+.refresh-button:hover .icon {
+  transform: rotate(90deg);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  padding: 4px 8px;
+  gap: 6px;
+}
+
+.search-icon {
+  color: #666;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+}

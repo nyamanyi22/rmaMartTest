@@ -1,0 +1,46 @@
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+/* Status colors */
+.badge-pending {
+  background-color: #f59e0b; /* amber-500 */
+}
+
+.badge-approved {
+  background-color: #10b981; /* green-500 */
+}
+
+.badge-rejected {
+  background-color: #ef4444; /* red-500 */
+}
+
+.badge-shipped {
+  background-color: #3b82f6; /* blue-500 */
+}
+
+.badge-completed {
+  background-color: #6b7280; /* gray-500 */
+}
+
+.badge-processing {
+  background-color: #8b5cf6; /* violet-500 */
+}
+
+.badge-awaiting-parts {
+  background-color: #eab308; /* yellow-500 */
+}
+
+.badge-default {
+  background-color: #9ca3af; /* gray-400 */
+}
+.status-badge:hover {
+  opacity: 0.9; /* Slightly dim on hover */
+  cursor: pointer; /* Indicate that it's interactive */
+}

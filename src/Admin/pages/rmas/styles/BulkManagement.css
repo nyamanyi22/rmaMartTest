@@ -104,3 +104,12 @@
     width: 100%;
   }
 }
+.refresh-button .icon,
+.search-icon {
+  color: #555;
+  vertical-align: middle;
+}
+
+.refresh-button:hover .icon {
+  color: #007bff;
+}

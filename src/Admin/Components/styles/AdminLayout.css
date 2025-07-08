@@ -1,0 +1,86 @@
+/* src/styles/Layout.css */
+
+/* --- Variables (Highly Recommended for Consistency) --- */
+/* Ensure these variables are defined in AdminSidebar.css or here in Layout.css */
+/* I'll put them here for self-containment for the layout aspects */
+:root {
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 80px; /* Width when collapsed, for icon-only mode */
+  --sidebar-accent: #3498db; /* Blue accent for active/icons */
+  --transition-speed: 0.3s;
+}
+
+/* --- Overall App Container --- */
+.app-container {
+  display: flex;
+  min-height: 100vh; /* Takes full viewport height */
+  background-color: #f0f2f5; /* A subtle background for the entire app */
+}
+
+/* --- Main Content Wrapper (Handles Header + Main Area) --- */
+.main-content-wrapper {
+  /* Equivalent to Tailwind: flex flex-col flex-1 overflow-hidden */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allows it to take up remaining horizontal space */
+  overflow: hidden; /* Hides any overflowing content horizontally */
+
+  /* Margin-left for sidebar displacement */
+  margin-left: var(--sidebar-width); /* Default margin, matches sidebar width */
+  transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for content shift */
+}
+
+/* Adjust margin when sidebar is hidden/collapsed */
+.app-container.sidebar-hidden .main-content-wrapper {
+  margin-left: var(--sidebar-collapsed-width); /* Adjust for collapsed sidebar width */
+}
+
+/* --- App Header (Styles for AdminHeader component) --- */
+.app-header { /* This class is used by your AdminHeader.jsx */
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  gap: 1rem;
+  z-index: 999; /* Ensure header is above main content */
+}
+
+/* You might want to move these next three rules to adminHeader.css
+   if you prefer all header-related styles there, but they affect the layout. */
+.page-title { /* This class is used by your AdminHeader.jsx */
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.sidebar-toggle-button { /* This class is used by your AdminHeader.jsx */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #34495e; /* Icon color */
+  border-radius: 5px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-toggle-button:hover {
+  background-color: #f0f0f0;
+  color: var(--sidebar-accent);
+}
+
+/* --- Main Content Area --- */
+.main-content {
+  /* Equivalent to Tailwind: p-4 overflow-y-auto */
+  flex-grow: 1; /* Allows it to take up remaining vertical space in main-content-wrapper */
+  padding: 1rem; /* p-4 in Tailwind is usually 16px or 1rem */
+  background-color: #f9fbfd; /* Light background for content area */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+}
+
+/* Rest of your Layout.css if any */

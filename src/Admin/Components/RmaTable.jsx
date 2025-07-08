@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import './RmaTable.css';
+import './styles/RmaTable.css';
 
 const RmaTable = ({
   data = [],

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import RmaFilters from '../Components/RmaFilters';
-import RmaTable from '../Components/RmaTable';
-import { fetchRmas } from '../services/rmaService';
-import { useDebounce } from '../hooks/useDebounce';
+import RmaFilters from '../../Components/RmaFilters';
+import RmaTable from '../../Components/RmaTable';
+import { fetchRmas } from '../../rmaService';
+import { useDebounce } from '../../hooks/useDebounce';
 import './styles/RmaSearch.css';
 
 const RmaSearch = () => {

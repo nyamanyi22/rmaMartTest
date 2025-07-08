@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import RmaTable from './RmaTable';
-import { fetchRmas, bulkUpdateRmaStatus } from '../rmaService';
-import { useDebounce } from '../hooks/useDebounce';
-import Pagination from './Pagination'; // Assuming you have this locally
+import RmaTable from '../../Components/RmaTable';
+
+import { fetchRmas, bulkUpdateRma } from '../../rmaService';
+import { useDebounce } from '../../hooks/useDebounce';
+import Pagination from '../../Components/Pagination';
+import './styles/ProcessingRma.css'; 
 
 const ProcessingRmas = () => {
   // State management
