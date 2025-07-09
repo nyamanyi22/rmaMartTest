@@ -1,0 +1,121 @@
+/* Form Container */
+.product-form {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 0.5rem;
+}
+
+/* Form Title */
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+/* Input Fields */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Messages */
+.success-message {
+  padding: 0.75rem;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  padding: 0.75rem;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.submit-btn:disabled {
+  background-color: #60a5fa;
+  cursor: not-allowed;
+}
+
+/* Loading State */
+.submit-btn.loading {
+  position: relative;
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .product-form {
+    padding: 1rem;
+  }
+}

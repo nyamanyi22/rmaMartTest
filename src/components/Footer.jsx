@@ -22,7 +22,7 @@ const Footer = () => {
   <span>Visit our main site</span>
 </a>
 
-<Link to="/admin/dashboard" className="footer-link">
+<Link to="/admin/rmas/dashboard" className="footer-link">
   <FaUserShield className="footer-icon" />
   <span>Admin</span>
 </Link>

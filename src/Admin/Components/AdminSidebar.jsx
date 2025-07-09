@@ -10,13 +10,13 @@ import {
   HiOutlineChartBar,
   HiOutlineCog,
   HiOutlineArrowLeftOnRectangle,
-  HiOutlineMenuAlt2
+    HiOutlineBars3
 } from 'react-icons/hi2';
 import './styles/AdminSidebar.css';
 
 const menuItems = [
   {
-    to: '/admin',
+    to: '/admin/rmas/dashboard',
     label: 'Dashboard',
     icon: <HiOutlineHome />,
   },
@@ -25,7 +25,7 @@ const menuItems = [
     label: 'RMA Management',
     icon: <HiOutlineArrowPath />,
     submenu: [
-      { to: '/admin/rmas/dashboard', label: 'RMA Dashboard' },
+      
       { to: '/admin/rmas/pending', label: 'Pending Approval' },
       { to: '/admin/rmas/approved', label: 'Approved RMAs' },
       { to: '/admin/rmas/rejected', label: 'Rejected RMAs' },
@@ -39,7 +39,7 @@ const menuItems = [
     label: 'Customer Management',
     icon: <HiOutlineUserGroup />,
     submenu: [
-      { to: '/admin/customers', label: 'Customer List' },
+      { to: '/admin/customers/list', label: 'Customer List' },
       { to: '/admin/customers/create', label: 'Create Customer' },
     ]
   },
@@ -48,8 +48,8 @@ const menuItems = [
     label: 'Product Management',
     icon: <HiOutlineCube />,
     submenu: [
-      { to: '/admin/products/list', label: 'Product Catalog' },
-      { to: '/admin/products/serial-numbers', label: 'Serial Numbers' },
+      { to: '/admin/products/ProductList', label: 'Product List' },
+      { to: '/admin/products/ProductCreate', label: 'Create Product' },
     ]
   },
   {
@@ -74,7 +74,7 @@ const menuItems = [
   }
 ];
 
-const AdminSidebar = ({ onLogout, user = { name: 'Admin', role: 'System Administrator' } }) => {
+const AdminSidebar = ({ isOpen, onLogout, user = { name: 'Admin', role: 'System Administrator' } }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openMenus, setOpenMenus] = useState({});
@@ -98,7 +98,8 @@ const AdminSidebar = ({ onLogout, user = { name: 'Admin', role: 'System Administ
       <div className="sidebar-header">
         <span className="logo">{sidebarOpen ? 'RMA Admin' : 'R'}</span>
         <button className="sidebar-toggle" onClick={toggleSidebar}>
-          <HiOutlineMenuAlt2 />
+         <HiOutlineBars3 />
+
         </button>
       </div>
 
@@ -111,6 +112,7 @@ const AdminSidebar = ({ onLogout, user = { name: 'Admin', role: 'System Administ
             const isActiveParent = hasSubmenu && isParentActive(submenu);
 
             return (
+              
               <li key={to} className={`menu-item ${isActiveParent ? 'active-parent' : ''}`}>
                 <NavLink
                   to={to}
@@ -146,22 +148,7 @@ const AdminSidebar = ({ onLogout, user = { name: 'Admin', role: 'System Administ
         </ul>
       </nav>
 
-      {/* Footer */}
-      <div className="sidebar-footer">
-        <div className="user-info">
-          <div className="avatar">{user.name[0]}</div>
-          {sidebarOpen && (
-            <div>
-              <div className="user-name">{user.name}</div>
-              <div className="user-role">{user.role}</div>
-            </div>
-          )}
-        </div>
-        <button onClick={onLogout} className="logout-btn">
-          <HiOutlineArrowLeftOnRectangle />
-          {sidebarOpen && <span>Logout</span>}
-        </button>
-      </div>
+     
     </aside>
   );
 };

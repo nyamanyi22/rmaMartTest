@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
-import AdminHeader from './AdminHeader';
+import AdminHeader from './AdminHeader'; // Assuming AdminHeader handles the top bar
 import './styles/AdminLayout.css'; // This CSS file will now contain all layout-related styles
 
 // Function to dynamically get the page title based on the current path
@@ -39,7 +39,7 @@ const getPageTitle = (pathname) => {
 };
 
 const AdminLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State to control sidebar open/close
   const location = useLocation();
 
   const toggleSidebar = () => {
@@ -51,23 +51,26 @@ const AdminLayout = () => {
   const handleLogout = () => {
     console.log("User logging out from Layout component...");
     alert("Logout functionality not fully implemented in this example.");
+    // Implement actual logout logic here (e.g., clear tokens, redirect)
   };
 
   return (
-    <div className={`app-container ${isSidebarOpen ? 'sidebar-visible' : 'sidebar-hidden'}`}>
+    <div className={`admin-layout-container ${isSidebarOpen ? 'sidebar-visible' : 'sidebar-hidden'}`}>
+      {/* AdminSidebar component - pass isOpen prop for its internal styling */}
       <AdminSidebar isOpen={isSidebarOpen} />
 
-      {/* Removed Tailwind classes, now handled by .main-content-wrapper in Layout.css */}
+      {/* Main content wrapper - This will have dynamic margin-left */}
       <div className="main-content-wrapper">
+        {/* AdminHeader component - pass props for its content and sidebar toggle */}
         <AdminHeader
           userName="Current User"
           onLogout={handleLogout}
-          isSidebarOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen} // Pass to header for potential internal adjustments
+          toggleSidebar={toggleSidebar} // Pass toggle function to header
           pageTitle={currentPageTitle}
         />
 
-        {/* Removed Tailwind classes, now handled by .main-content in Layout.css */}
+        {/* Main content area where nested routes render */}
         <main className="main-content">
           <Outlet />
         </main>

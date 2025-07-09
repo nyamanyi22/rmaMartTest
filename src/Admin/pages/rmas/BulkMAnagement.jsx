@@ -6,6 +6,8 @@ import RmaFilters from '../../Components/RmaFilters';
 import { fetchRmas, bulkUpdateRma, exportRmas } from '../../rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
 import { HiArrowPath, HiMagnifyingGlass } from 'react-icons/hi2';
+import { HiArrowDownTray } from 'react-icons/hi2';
+
 import './styles/BulkManagement.css';
 
 const BulkManagement = () => {
