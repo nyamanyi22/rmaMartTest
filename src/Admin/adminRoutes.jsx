@@ -15,10 +15,14 @@ import AdminCreateCustomer from './pages/customers/CustomerForm';
 import ProductList from './pages/products/ProductList';
 import CreateProductPage from './pages/products/CreateProductPage';
 import EditProductPage from './pages/products/EditProductPage'
+import AdminProfile from './pages/Admin/AdminProfile';
+import AdminLogin from './Components/AdminLogin';
+
+
 
 const AdminRoutes = [
   <Route path="/admin" element={<AdminLayout />} key="admin-root">
-    
+   
     <Route path="rmas/dashboard" element={<RmaDashboard />} />
     <Route path="rma/:id" element={<RmaDetailPage />} />
     <Route path="rmas/rejected" element={<RejectedRmas />} />
@@ -34,8 +38,13 @@ const AdminRoutes = [
       <Route path="/admin/products" element={<ProductList />} />
   <Route path="/admin/products/create" element={<CreateProductPage />} />
   <Route path="/admin/products/edit/:id" element={<EditProductPage />} />
+    <Route path="/admin/profile" element={<AdminProfile />} />
+    <Route path="/admin/login" element={<AdminLogin />} />
+
+    {/* Add other admin routes here */}
 
   </Route>,
+  
 ];
 
 export default AdminRoutes;
