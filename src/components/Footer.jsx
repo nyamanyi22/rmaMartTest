@@ -26,6 +26,10 @@ const Footer = () => {
   <FaUserShield className="footer-icon" />
   <span>Admin</span>
 </Link>
+<Link to="/contact" className="footer-link">  
+            <FaEnvelope className="footer-icon" />
+            <span>Contact Us</span>
+          </Link>
 
 
 

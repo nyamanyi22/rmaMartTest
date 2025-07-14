@@ -48,8 +48,8 @@ const menuItems = [
     label: 'Product Management',
     icon: <HiOutlineCube />,
     submenu: [
-      { to: '/admin/products/ProductList', label: 'Product List' },
-      { to: '/admin/products/ProductCreate', label: 'Create Product' },
+      { to: '/admin/products', label: 'Product List' },
+      { to: '/admin/products/create', label: 'Create Product' },
     ]
   },
   {

@@ -13,7 +13,8 @@ import ManageCases from './pages/cases/ManageCases';
 import AdminCustomerList from './pages/customers/AdminCustomerList';
 import AdminCreateCustomer from './pages/customers/CustomerForm';
 import ProductList from './pages/products/ProductList';
-import ProductForm from './pages/products/ProductForm';
+import CreateProductPage from './pages/products/CreateProductPage';
+import EditProductPage from './pages/products/EditProductPage'
 
 const AdminRoutes = [
   <Route path="/admin" element={<AdminLayout />} key="admin-root">
@@ -30,11 +31,10 @@ const AdminRoutes = [
     <Route path="customers/list" element={<AdminCustomerList />} />
     <Route path="customers/create" element={<AdminCreateCustomer />} />
 
-    <Route path="products/ProductList" element={<ProductList />} />
-    <Route path="products/create" element={<ProductForm mode="create" />} />
-<Route path="products/edit/:id" element={<ProductForm mode="edit" />} />
+      <Route path="/admin/products" element={<ProductList />} />
+  <Route path="/admin/products/create" element={<CreateProductPage />} />
+  <Route path="/admin/products/edit/:id" element={<EditProductPage />} />
 
-    <Route path="products/ProductCreate" element={<ProductForm />} />
   </Route>,
 ];
 

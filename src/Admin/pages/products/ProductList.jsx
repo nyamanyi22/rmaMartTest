@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+import { fetchProducts } from '../../api/productService'; // Adjust path if needed
+
 import './styles/ProductList.css'; // Ensure you have this CSS file for styling
 
 const exportToCSV = (products) => {
   if (!products.length) return alert('No products to export.');
 
-  const headers = ['Code', 'Name', 'Brand', 'Category', 'Price', 'Stock'];
+  const headers = ['Code', 'Name', 'Brand', 'Category', 'Stock'];
   const rows = products.map(p => [
     p.code,
     p.name,
     p.brand,
     p.category,
-    p.price,
-    p.stock
+     p.stock
   ]);
 
   const csvContent = [
@@ -48,8 +50,9 @@ const ProductList = () => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('/api/admin/products');
-        setProducts(response.data);
+        const data = await fetchProducts();
+        setProducts(Array.isArray(data) ? data : []); // Safely ensure it's an array
+
       } catch (error) {
         setError('Failed to fetch products. Please try again later.');
         console.error('Failed to fetch products:', error);
@@ -163,7 +166,6 @@ const handleExport = async () => {
                   <th>Name</th>
                   <th>Brand</th>
                   <th>Category</th>
-                  <th>Price</th>
                   <th>Stock</th>
                   <th>Actions</th>
                 </tr>
@@ -176,7 +178,6 @@ const handleExport = async () => {
                       <td>{product.name}</td>
                       <td>{product.brand}</td>
                       <td>{product.category}</td>
-                      <td>${product.price?.toFixed(2)}</td>
                       <td>{product.stock}</td>
                       <td className="action-buttons">
                         <button

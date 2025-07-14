@@ -1,176 +1,106 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './styles/ProductList.css'; // Ensure you have this CSS file for styling
+// src/admin/components/ProductForm.jsx
+import React, { useState, useEffect } from 'react';
 
-const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const itemsPerPage = 10;
-
-  const navigate = useNavigate();
+const ProductForm = ({ initialData = {}, onSubmit, isEditing = false }) => {
+  const [formData, setFormData] = useState({
+    code: '',
+    name: '',
+    brand: '',
+    category: '',
+   
+    stock: '',
+  });
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get('/api/admin/products');
-        setProducts(response.data);
-      } catch (error) {
-        setError('Failed to fetch products. Please try again later.');
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  const filteredProducts = products.filter((product) =>
-    [product.name, product.code, product.brand, product.category]
-      .join(' ')
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+    if (isEditing && initialData) {
+      setFormData({
+        code: initialData.code || '',
+        name: initialData.name || '',
+        brand: initialData.brand || '',
+        category: initialData.category || '',
+       
+        stock: initialData.stock || '',
+      });
     }
+  }, [initialData, isEditing]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleEdit = (id) => {
-    navigate(`/admin/products/edit/${id}`);
-  };
-
-  const handleCreate = () => {
-    navigate('/admin/products/create');
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
-
-    try {
-      await axios.delete(`/api/admin/products/${id}`);
-      setProducts(products.filter((product) => product.id !== id));
-    } catch (error) {
-      setError('Failed to delete product. Please try again.');
-      console.error('Delete failed:', error);
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
   };
 
   return (
-    <div className="product-list-container">
-      <div className="product-list-header">
-        <h2>Product List</h2>
-        <button onClick={handleCreate} className="add-product-btn">
-          Add Product
-        </button>
-      </div>
-
-      {error && <div className="error-message">{error}</div>}
-
-      <div className="search-container">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
+      <div>
+        <label className="block mb-1 font-medium">Product Code</label>
         <input
           type="text"
-          placeholder="Search by name, code, brand, category..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          name="code"
+          value={formData.code}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Name</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Brand</label>
+        <input
+          type="text"
+          name="brand"
+          value={formData.brand}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Category</label>
+        <input
+          type="text"
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+      
+      <div>
+        <label className="block mb-1 font-medium">Stock</label>
+        <input
+          type="number"
+          name="stock"
+          value={formData.stock}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
         />
       </div>
 
-      {isLoading ? (
-        <div className="loading-spinner"></div>
-      ) : (
-        <>
-          <div className="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Name</th>
-                  <th>Brand</th>
-                  <th>Category</th>
-                  <th>Stock</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.length > 0 ? (
-                  currentItems.map((product) => (
-                    <tr key={product.id}>
-                      <td>{product.code}</td>
-                      <td>{product.name}</td>
-                      <td>{product.brand}</td>
-                      <td>{product.category}</td>
-                      <td>{product.stock}</td>
-                      <td className="action-buttons">
-                        <button
-                          onClick={() => handleEdit(product.id)}
-                          className="edit-btn"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="delete-btn"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="no-results">
-                      No products found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              <div className="page-numbers">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={currentPage === page ? 'active' : ''}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+      <button
+        type="submit"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        {isEditing ? 'Update Product' : 'Add Product'}
+      </button>
+    </form>
   );
 };
 
-export default ProductList;
+export default ProductForm;
