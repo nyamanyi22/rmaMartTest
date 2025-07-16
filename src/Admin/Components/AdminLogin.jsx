@@ -1,86 +1,78 @@
-// src/components/AdminLayout.jsx
-import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import AdminSidebar from './AdminSidebar';
-import AdminHeader from './AdminHeader';
-import './styles/AdminLayout.css';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axiosAdmin from '../api/axiosAdmin';
 import { useAdminAuth } from '../AdminContex/AdminAuthContext';
+import './styles/AdminLogin.css';
 
-const getPageTitle = (pathname) => {
-  if (pathname.startsWith('/admin/rmas/dashboard')) return 'RMA Dashboard';
-  if (pathname.startsWith('/admin/rmas/pending')) return 'Pending Approval RMAs';
-  if (pathname.startsWith('/admin/rmas/approved')) return 'Approved RMAs';
-  if (pathname.startsWith('/admin/rmas/rejected')) return 'Rejected RMAs';
-  if (pathname.startsWith('/admin/rmas/processing')) return 'Processing RMAs';
-  if (pathname.startsWith('/admin/rmas/bulk')) return 'Bulk RMA Management';
-  if (pathname.startsWith('/admin/rmas/manage')) return 'Manage RMA Cases';
-  if (pathname.startsWith('/admin/rmas')) return 'RMA Management';
-
-  if (pathname.startsWith('/admin/customers/create')) return 'Create New Customer';
-  if (pathname.startsWith('/admin/customers')) return 'Customer Management';
-
-  if (pathname.startsWith('/admin/products/list')) return 'Product Catalog';
-  if (pathname.startsWith('/admin/products/serial-numbers')) return 'Serial Numbers';
-  if (pathname.startsWith('/admin/products')) return 'Product Management';
-
-  if (pathname.startsWith('/admin/reports/rma-volume')) return 'RMA Volume Report';
-  if (pathname.startsWith('/admin/reports/turnaround')) return 'Turnaround Time Report';
-  if (pathname.startsWith('/admin/reports/reason-codes')) return 'Return Reasons Report';
-  if (pathname.startsWith('/admin/reports')) return 'Reports';
-
-  if (pathname.startsWith('/admin/settings/general')) return 'General Settings';
-  if (pathname.startsWith('/admin/settings/shipping')) return 'Shipping Settings';
-  if (pathname.startsWith('/admin/settings/return-reasons')) return 'Return Reason Settings';
-  if (pathname.startsWith('/admin/settings')) return 'System Settings';
-
-  if (pathname === '/admin' || pathname === '/') return 'Dashboard';
-
-  return 'Admin Panel';
-};
-
-const AdminLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const location = useLocation();
+const AdminLogin = () => {
+  const { login } = useAdminAuth();
   const navigate = useNavigate();
-  const { admin, logout } = useAdminAuth();
 
-  useEffect(() => {
-    const saved = localStorage.getItem('adminSidebarOpen');
-    if (saved !== null) setIsSidebarOpen(saved === 'true');
-  }, []);
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const toggleSidebar = () => {
-    const newState = !isSidebarOpen;
-    localStorage.setItem('adminSidebarOpen', newState);
-    setIsSidebarOpen(newState);
-  };
+  const handleChange = (e) =>
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const currentPageTitle = getPageTitle(location.pathname);
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/admin/login');
+    try {
+      const res = await axiosAdmin.post('/login', {
+        email: form.email,
+        password: form.password
+      });
+
+      const { token } = res.data;
+      // Save token & set default header
+      localStorage.setItem('adminToken', token);
+      axiosAdmin.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      await login(form.email, form.password); // update context state
+      navigate('/admin/rmas/dashboard');
+    } catch (err) {
+      console.error('Login error', err);
+      setError(err.response?.data?.message || 'Invalid credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className={`admin-layout-container ${isSidebarOpen ? 'sidebar-visible' : 'sidebar-hidden'}`}>
-      <AdminSidebar isOpen={isSidebarOpen} />
+    <div className="admin-login-container">
+      <form className="admin-login-form" onSubmit={handleSubmit}>
+        <h2>Admin Login</h2>
+        {error && <div className="error">{error}</div>}
 
-      <div className="main-content-wrapper">
-        <AdminHeader
-          userName={admin?.first_name || 'Admin'}
-          onLogout={handleLogout}
-          isSidebarOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-          pageTitle={currentPageTitle}
+        <label>Email</label>
+        <input
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          autoComplete="username"
         />
 
-        <main className="main-content">
-          <Outlet />
-        </main>
-      </div>
+        <label>Password</label>
+        <input
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          required
+          autoComplete="current-password"
+        />
+
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
     </div>
   );
 };
 
-export default AdminLayout;
+export default AdminLogin;

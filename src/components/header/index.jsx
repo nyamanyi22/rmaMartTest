@@ -24,7 +24,7 @@ const isAuthenticated = !!user;
       <div className="header-container">
         <div className="header-left">
           <img src={logo} alt="Mart Networks Logo" className="logo-img" />
-          <span className="rma-title">Mart Networks RMA System</span>
+          <span className="rma-title"> RMA System</span>
         </div>
 
         <nav className="desktop-nav">

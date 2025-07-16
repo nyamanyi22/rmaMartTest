@@ -1,4 +1,3 @@
-// AdminRoutes.jsx
 import React from 'react';
 import { Route } from 'react-router-dom';
 import AdminLayout from './Components/AdminLayout';
@@ -14,17 +13,15 @@ import AdminCustomerList from './pages/customers/AdminCustomerList';
 import AdminCreateCustomer from './pages/customers/CustomerForm';
 import ProductList from './pages/products/ProductList';
 import CreateProductPage from './pages/products/CreateProductPage';
-import EditProductPage from './pages/products/EditProductPage'
+import EditProductPage from './pages/products/EditProductPage';
 import AdminProfile from './pages/Admin/AdminProfile';
 import AdminLogin from './Components/AdminLogin';
 import RequireAdminAuth from './Components/RequireAdminAuth';
-
-
+import AdminCreateForm from './AdminContex/AdminCreateForm';
+import AdminList from './Components/UserList';
 const AdminRoutes = [
-  // ✅ Public admin login route
   <Route path="/admin/login" element={<AdminLogin />} key="admin-login" />,
 
-  // ✅ All other admin routes (protected)
   <Route
     path="/admin"
     element={
@@ -48,9 +45,10 @@ const AdminRoutes = [
     <Route path="products/create" element={<CreateProductPage />} />
     <Route path="products/edit/:id" element={<EditProductPage />} />
     <Route path="profile" element={<AdminProfile />} />
+    <Route path="admin/create" element={<AdminCreateForm />} />
+    <Route path="users/list" element={<AdminList />} />
+    
   </Route>,
 ];
-
-
 
 export default AdminRoutes;

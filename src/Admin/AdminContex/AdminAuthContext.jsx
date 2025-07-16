@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import axiosAdmin from '../api/axiosAdmin'; // 🔥 Use your custom axios instance
+import axiosAdmin from '../api/axiosAdmin'; // Adjust the import path as necessary
 
 const AdminAuthContext = createContext();
 

@@ -1,73 +1,82 @@
-.rma-header {
+.admin-header {
+  background-color: #1f2937;
+  color: rgb(170, 57, 57);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 2rem;
-  background-color: #2c3e50;
-  color: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 10px 20px;
+  position: relative;
 }
 
-.header-left {
+.admin-header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 10px;
 }
 
-.company-logo {
-  height: 100px;
-  width: 150px;
+.admin-logo {
+  height: 80px;
+  width: 100px;
+
 }
 
-.rma-title {
-  font-size: 1.2rem;
-  margin: 0;
+.admin-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.admin-header-right {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 15px;
 }
 
-.version {
-  font-size: 0.8rem;
-  opacity: 0.8;
-  font-weight: normal;
+.admin-welcome {
+  font-size: 14px;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.user-greeting {
-  display: flex;
-  gap: 0.3rem;
-}
-
-.logout-btn {
-  background: #e74c3c;
+.logout-button {
+  background-color: #ef4444;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background 0.2s;
 }
 
-.logout-btn:hover {
-  background: #c0392b;
+.logout-button:hover {
+  background-color: #dc2626;
 }
 
-/* Accessibility focus styles */
-.logout-btn:focus {
-  outline: 2px solid #3498db;
-  outline-offset: 2px;
+.hamburger {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* 🔁 Mobile Styles */
+@media (max-width: 768px) {
+  .admin-header {
+    flex-wrap: wrap;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .admin-header-right {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 10px;
+  }
+
+  .admin-header-right.open {
+    display: flex;
+  }
+
+  .admin-header-left {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

@@ -1,13 +1,12 @@
 // src/components/AdminLayout.jsx
-import React, { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import AdminSidebar from './AdminSidebar';
-import AdminHeader from './AdminHeader'; // Assuming AdminHeader handles the top bar
-import './styles/AdminLayout.css'; 
-import { useAdminAuth } from '../AdminContex/AdminAuthContext';
-// This CSS file will now contain all layout-related styles
 
-// Function to dynamically get the page title based on the current path
+import React, { useState, useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import AdminSidebar from './AdminSidebar';
+import AdminHeader from './AdminHeader';
+import './styles/AdminLayout.css';
+import { useAdminAuth } from '../AdminContex/AdminAuthContext';
+
 const getPageTitle = (pathname) => {
   if (pathname.startsWith('/admin/rmas/dashboard')) return 'RMA Dashboard';
   if (pathname.startsWith('/admin/rmas/pending')) return 'Pending Approval RMAs';
@@ -40,46 +39,47 @@ const getPageTitle = (pathname) => {
   return 'Admin Panel';
 };
 
-
-
 const AdminLayout = () => {
-  const { admin } = useAdminAuth();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State to control sidebar open/close
+  const navigate = useNavigate();
   const location = useLocation();
-useEffect(() => {
-  const saved = localStorage.getItem('adminSidebarOpen');
-  if (saved !== null) setIsSidebarOpen(saved === 'true');
-}, []);
+  const { admin, logout, loading } = useAdminAuth();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-const toggleSidebar = () => {
-  const newState = !isSidebarOpen;
-  localStorage.setItem('adminSidebarOpen', newState);
-  setIsSidebarOpen(newState);
-};
+  useEffect(() => {
+    const saved = localStorage.getItem('adminSidebarOpen');
+    if (saved !== null) {
+      setIsSidebarOpen(saved === 'true');
+    }
+  }, []);
+
+  const toggleSidebar = () => {
+    const newState = !isSidebarOpen;
+    localStorage.setItem('adminSidebarOpen', newState);
+    setIsSidebarOpen(newState);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login');
+  };
 
   const currentPageTitle = getPageTitle(location.pathname);
-const handleLogout = async () => {
-  await logout();
-  navigate('/admin/login');
-};
+
+  if (loading) {
+    return <div className="admin-loading-screen">Loading admin panel...</div>;
+  }
+
+  if (!admin) {
+    return null; // or a redirect to login
+  }
 
   return (
     <div className={`admin-layout-container ${isSidebarOpen ? 'sidebar-visible' : 'sidebar-hidden'}`}>
-      {/* AdminSidebar component - pass isOpen prop for its internal styling */}
       <AdminSidebar isOpen={isSidebarOpen} />
 
-      {/* Main content wrapper - This will have dynamic margin-left */}
       <div className="main-content-wrapper">
-        {/* AdminHeader component - pass props for its content and sidebar toggle */}
-        <AdminHeader
-           userName={admin?.first_name || 'Admin'}
-          onLogout={handleLogout}
-          isSidebarOpen={isSidebarOpen} // Pass to header for potential internal adjustments
-          toggleSidebar={toggleSidebar} // Pass toggle function to header
-          pageTitle={currentPageTitle}
-        />
+        <AdminHeader />
 
-        {/* Main content area where nested routes render */}
         <main className="main-content">
           <Outlet />
         </main>

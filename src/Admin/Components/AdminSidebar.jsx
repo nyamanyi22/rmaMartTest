@@ -9,8 +9,7 @@ import {
   HiOutlineCube,
   HiOutlineChartBar,
   HiOutlineCog,
-  HiOutlineArrowLeftOnRectangle,
-    HiOutlineBars3
+  HiOutlineBars3
 } from 'react-icons/hi2';
 import './styles/AdminSidebar.css';
 
@@ -25,7 +24,6 @@ const menuItems = [
     label: 'RMA Management',
     icon: <HiOutlineArrowPath />,
     submenu: [
-      
       { to: '/admin/rmas/pending', label: 'Pending Approval' },
       { to: '/admin/rmas/approved', label: 'Approved RMAs' },
       { to: '/admin/rmas/rejected', label: 'Rejected RMAs' },
@@ -63,6 +61,15 @@ const menuItems = [
     ]
   },
   {
+    to: '/admin/users',
+    label: 'User Management',
+    icon: <HiOutlineUserGroup />,
+    submenu: [
+      { to: 'users/list', label: 'User List' },
+      { to: 'admin/create', label: 'Create User' },
+    ]
+  },
+  {
     to: '/admin/settings',
     label: 'System Settings',
     icon: <HiOutlineCog />,
@@ -94,16 +101,13 @@ const AdminSidebar = ({ isOpen, onLogout, user = { name: 'Admin', role: 'System 
 
   return (
     <aside className={`admin-sidebar ${sidebarOpen ? 'is-open' : 'is-closed'}`}>
-      {/* Header */}
       <div className="sidebar-header">
         <span className="logo">{sidebarOpen ? 'RMA Admin' : 'R'}</span>
         <button className="sidebar-toggle" onClick={toggleSidebar}>
-         <HiOutlineBars3 />
-
+          <HiOutlineBars3 />
         </button>
       </div>
 
-      {/* Menu Items */}
       <nav className="sidebar-nav">
         <ul className="menu">
           {menuItems.map(({ to, label, icon, submenu }) => {
@@ -112,7 +116,6 @@ const AdminSidebar = ({ isOpen, onLogout, user = { name: 'Admin', role: 'System 
             const isActiveParent = hasSubmenu && isParentActive(submenu);
 
             return (
-              
               <li key={to} className={`menu-item ${isActiveParent ? 'active-parent' : ''}`}>
                 <NavLink
                   to={to}
@@ -130,7 +133,6 @@ const AdminSidebar = ({ isOpen, onLogout, user = { name: 'Admin', role: 'System 
                   )}
                 </NavLink>
 
-                {/* Submenu */}
                 {hasSubmenu && isOpen && (
                   <ul className="submenu">
                     {submenu.map(({ to: subTo, label: subLabel }) => (
@@ -147,8 +149,6 @@ const AdminSidebar = ({ isOpen, onLogout, user = { name: 'Admin', role: 'System 
           })}
         </ul>
       </nav>
-
-     
     </aside>
   );
 };

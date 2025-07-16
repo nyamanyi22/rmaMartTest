@@ -35,7 +35,7 @@
 }
 
 .logo-img {
-  height: 100px;
+  height:90px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
@@ -78,7 +78,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 0;
-  height: 2px;
+  height: 1px;
   background: linear-gradient(90deg, #4ea0ff 0%, #58d68d 100%);
   transition: width 0.3s ease;
 }
