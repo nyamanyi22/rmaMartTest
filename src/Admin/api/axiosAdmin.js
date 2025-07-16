@@ -10,6 +10,11 @@ const axiosAdmin = axios.create({
   },
 });
 
+const token = localStorage.getItem('adminToken');
+if (token) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
 // Add Authorization Header Automatically (if using token)
 axiosAdmin.interceptors.request.use((config) => {
   const token = localStorage.getItem('adminToken'); // Use admin token

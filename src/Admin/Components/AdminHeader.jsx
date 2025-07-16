@@ -5,19 +5,22 @@ import { HiOutlineBars3, HiOutlineXMark } from 'react-icons/hi2';
 import './styles/adminHeader.css';
 import logo from '../../assets/martLogo.png';
 import { useAdminAuth } from '../AdminContex/AdminAuthContext';
+import { ClipLoader } from 'react-spinners'; // Choose any spinner you like
 
 const AdminHeader = ({ isSidebarOpen, toggleSidebar, pageTitle }) => {
   const navigate = useNavigate();
   const { admin, logout } = useAdminAuth(); // ✅ Get admin state and logout
 
   const handleAuthClick = () => {
-    if (admin) {
-      logout(); // Call logout function from context
-      navigate('/admin/login');
-    } else {
-      navigate('/admin/login');
-    }
-  };
+  if (admin === undefined) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80px' }}>
+      <ClipLoader color="#0d6efd" size={35} />
+      <span style={{ marginLeft: '10px' }}>Loading admin panel...</span>
+    </div>
+  );
+}
+
 
   return (
     <header className="rma-header" role="banner">
@@ -32,7 +35,8 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar, pageTitle }) => {
         </button>
 
         <div className="logo-container">
-          <img src={logo} alt="Mart Network Solutions Logo" className="company-logo" />
+          <img src={logo} alt="Mart Logo" title="Mart Network Solutions" />
+
         </div>
 
         <h1 className="rma-title">
@@ -68,5 +72,6 @@ AdminHeader.propTypes = {
   toggleSidebar: PropTypes.func.isRequired,
   pageTitle: PropTypes.string.isRequired,
 };
+}
 
 export default AdminHeader;

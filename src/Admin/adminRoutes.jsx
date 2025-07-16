@@ -17,12 +17,23 @@ import CreateProductPage from './pages/products/CreateProductPage';
 import EditProductPage from './pages/products/EditProductPage'
 import AdminProfile from './pages/Admin/AdminProfile';
 import AdminLogin from './Components/AdminLogin';
-
+import RequireAdminAuth from './Components/RequireAdminAuth';
 
 
 const AdminRoutes = [
-  <Route path="/admin" element={<AdminLayout />} key="admin-root">
-   
+  // ✅ Public admin login route
+  <Route path="/admin/login" element={<AdminLogin />} key="admin-login" />,
+
+  // ✅ All other admin routes (protected)
+  <Route
+    path="/admin"
+    element={
+      <RequireAdminAuth>
+        <AdminLayout />
+      </RequireAdminAuth>
+    }
+    key="admin-root"
+  >
     <Route path="rmas/dashboard" element={<RmaDashboard />} />
     <Route path="rma/:id" element={<RmaDetailPage />} />
     <Route path="rmas/rejected" element={<RejectedRmas />} />
@@ -31,20 +42,15 @@ const AdminRoutes = [
     <Route path="rmas/bulk" element={<BulkManagement />} />
     <Route path="rmas/processing" element={<ProcessingRmas />} />
     <Route path="rmas/manage" element={<ManageCases />} />
-
     <Route path="customers/list" element={<AdminCustomerList />} />
     <Route path="customers/create" element={<AdminCreateCustomer />} />
-
-      <Route path="/admin/products" element={<ProductList />} />
-  <Route path="/admin/products/create" element={<CreateProductPage />} />
-  <Route path="/admin/products/edit/:id" element={<EditProductPage />} />
-    <Route path="/admin/profile" element={<AdminProfile />} />
-    <Route path="/admin/login" element={<AdminLogin />} />
-
-    {/* Add other admin routes here */}
-
+    <Route path="products" element={<ProductList />} />
+    <Route path="products/create" element={<CreateProductPage />} />
+    <Route path="products/edit/:id" element={<EditProductPage />} />
+    <Route path="profile" element={<AdminProfile />} />
   </Route>,
-  
 ];
+
+
 
 export default AdminRoutes;

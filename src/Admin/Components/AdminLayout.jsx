@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader'; // Assuming AdminHeader handles the top bar
-import './styles/AdminLayout.css'; // This CSS file will now contain all layout-related styles
+import './styles/AdminLayout.css'; 
+import { useAdminAuth } from '../AdminContex/AdminAuthContext';
+// This CSS file will now contain all layout-related styles
 
 // Function to dynamically get the page title based on the current path
 const getPageTitle = (pathname) => {
@@ -38,21 +40,28 @@ const getPageTitle = (pathname) => {
   return 'Admin Panel';
 };
 
+
+
 const AdminLayout = () => {
+  const { admin } = useAdminAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State to control sidebar open/close
   const location = useLocation();
+useEffect(() => {
+  const saved = localStorage.getItem('adminSidebarOpen');
+  if (saved !== null) setIsSidebarOpen(saved === 'true');
+}, []);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(prev => !prev);
-  };
+const toggleSidebar = () => {
+  const newState = !isSidebarOpen;
+  localStorage.setItem('adminSidebarOpen', newState);
+  setIsSidebarOpen(newState);
+};
 
   const currentPageTitle = getPageTitle(location.pathname);
-
-  const handleLogout = () => {
-    console.log("User logging out from Layout component...");
-    alert("Logout functionality not fully implemented in this example.");
-    // Implement actual logout logic here (e.g., clear tokens, redirect)
-  };
+const handleLogout = async () => {
+  await logout();
+  navigate('/admin/login');
+};
 
   return (
     <div className={`admin-layout-container ${isSidebarOpen ? 'sidebar-visible' : 'sidebar-hidden'}`}>
@@ -63,7 +72,7 @@ const AdminLayout = () => {
       <div className="main-content-wrapper">
         {/* AdminHeader component - pass props for its content and sidebar toggle */}
         <AdminHeader
-          userName="Current User"
+           userName={admin?.first_name || 'Admin'}
           onLogout={handleLogout}
           isSidebarOpen={isSidebarOpen} // Pass to header for potential internal adjustments
           toggleSidebar={toggleSidebar} // Pass toggle function to header

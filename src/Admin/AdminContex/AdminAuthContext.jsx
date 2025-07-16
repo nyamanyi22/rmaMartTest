@@ -1,16 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import axiosAdmin from '../api/axiosAdmin'; // 🔥 Use your custom axios instance
 
-// 1. Create the context
 const AdminAuthContext = createContext();
 
-// 2. Provider component
 export const AdminAuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('adminToken') || '');
   const [loading, setLoading] = useState(true);
 
-  // 3. Fetch current admin (if token exists)
+  // Fetch admin on token load (after page refresh)
   useEffect(() => {
     const fetchAdmin = async () => {
       if (!token) {
@@ -19,13 +17,8 @@ export const AdminAuthProvider = ({ children }) => {
       }
 
       try {
-        const res = await axios.get('http://localhost:8000/api/admin/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setAdmin(res.data); // res.data should be the admin object
+        const res = await axiosAdmin.get('/me'); // ✅ use axiosAdmin
+        setAdmin(res.data.admin ?? res.data); // support both formats
       } catch (error) {
         console.error('❌ Admin auth fetch failed:', error);
         localStorage.removeItem('adminToken');
@@ -38,44 +31,31 @@ export const AdminAuthProvider = ({ children }) => {
 
     fetchAdmin();
   }, [token]);
-//login
-const login = async (email, password) => {
-  try {
-    const res = await axios.post('http://localhost:8000/api/admin/login', {
-      email,
-      password,
-    });
 
-    const receivedToken = res.data.token;
-    const adminInfo = res.data.admin;
+  // 🔐 Login method
+  const login = async (email, password) => {
+    try {
+      const res = await axiosAdmin.post('/login', { email, password });
 
-    // ⬇️ SET AXIOS DEFAULT HEADER HERE 🔥
-    axios.defaults.headers.common['Authorization'] = `Bearer ${receivedToken}`;
+      const receivedToken = res.data.token;
+      const adminInfo = res.data.admin;
 
-    // Save token + set state
-    localStorage.setItem('adminToken', receivedToken);
-    setToken(receivedToken);
-    setAdmin(adminInfo);
-  } catch (error) {
-    console.error('❌ Login failed:', error);
-    throw error;
-  }
-};
+      // Save token
+      localStorage.setItem('adminToken', receivedToken);
+      setToken(receivedToken);
+      setAdmin(adminInfo);
+    } catch (error) {
+      console.error('❌ Login failed:', error);
+      throw error;
+    }
+  };
 
-  // 5. Logout method
+  // 🚪 Logout method
   const logout = async () => {
-    if (token) {
-      try {
-        await axios.post(
-          'http://localhost:8000/api/admin/logout',
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-      } catch (error) {
-        console.error('⚠️ Logout failed:', error);
-      }
+    try {
+      await axiosAdmin.post('/logout'); // ✅ no need for manual headers
+    } catch (error) {
+      console.warn('⚠️ Logout failed:', error);
     }
 
     localStorage.removeItem('adminToken');
@@ -83,22 +63,20 @@ const login = async (email, password) => {
     setAdmin(null);
   };
 
-  // 6. Context value
-  const value = {
-    admin,
-    token,
-    login,
-    logout,
-    isAuthenticated: !!admin,
-    loading,
-  };
-
   return (
-    <AdminAuthContext.Provider value={value}>
+    <AdminAuthContext.Provider
+      value={{
+        admin,
+        token,
+        login,
+        logout,
+        isAuthenticated: !!admin,
+        loading,
+      }}
+    >
       {children}
     </AdminAuthContext.Provider>
   );
 };
 
-// 7. Hook for easy access
 export const useAdminAuth = () => useContext(AdminAuthContext);
