@@ -9,8 +9,9 @@ import ApprovedRmas from './pages/rmas/ApprovedRmas';
 import BulkManagement from './pages/rmas/BulkManagement';
 import ProcessingRmas from './pages/rmas/Processing';
 import ManageCases from './pages/cases/ManageCases';
-import AdminCustomerList from './pages/customers/AdminCustomerList';
-import AdminCreateCustomer from './pages/customers/CustomerForm';
+import CustomerList from './pages/customers/CustomerList'; // New List Component
+import CreateCustomer from './pages/customers/CreateCustomer'; // New Create Component
+import UpdateCustomer from './pages/customers/EditCustomer'; // New Edit Component
 import ProductList from './pages/products/ProductList';
 import CreateProductPage from './pages/products/CreateProductPage';
 import EditProductPage from './pages/products/EditProductPage';
@@ -19,6 +20,7 @@ import AdminLogin from './Components/AdminLogin';
 import RequireAdminAuth from './Components/RequireAdminAuth';
 import AdminCreateForm from './AdminContex/AdminCreateForm';
 import AdminList from './Components/UserList';
+
 const AdminRoutes = [
   <Route path="/admin/login" element={<AdminLogin />} key="admin-login" />,
 
@@ -39,14 +41,16 @@ const AdminRoutes = [
     <Route path="rmas/bulk" element={<BulkManagement />} />
     <Route path="rmas/processing" element={<ProcessingRmas />} />
     <Route path="rmas/manage" element={<ManageCases />} />
-    <Route path="customers/list" element={<AdminCustomerList />} />
-    <Route path="customers/create" element={<AdminCreateCustomer />} />
+    <Route path="customers/list" element={<CustomerList />} />
+    <Route path="customers/create" element={<CreateCustomer />} />
+      <Route path="customers/edit/:id" element={<UpdateCustomer />} />
     <Route path="products" element={<ProductList />} />
     <Route path="products/create" element={<CreateProductPage />} />
     <Route path="products/edit/:id" element={<EditProductPage />} />
     <Route path="profile" element={<AdminProfile />} />
     <Route path="admin/create" element={<AdminCreateForm />} />
     <Route path="users/list" element={<AdminList />} />
+    
     
   </Route>,
 ];
