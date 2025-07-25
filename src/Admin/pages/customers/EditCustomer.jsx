@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AdminCustomerForm from './AdminCustomerForm';
-i
+
 import MessageModal from '../../Components/MessageModal';
 
 const EditCustomer = () => {
