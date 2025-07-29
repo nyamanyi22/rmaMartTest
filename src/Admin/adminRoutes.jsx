@@ -41,7 +41,7 @@ const AdminRoutes = [
     <Route path="rmas/bulk" element={<BulkManagement />} />
     <Route path="rmas/processing" element={<ProcessingRmas />} />
     <Route path="rmas/manage" element={<ManageCases />} />
-    <Route path="customers/list" element={<CustomerList />} />
+    <Route path="customers" element={<CustomerList />} />
     <Route path="customers/create" element={<CreateCustomer />} />
       <Route path="customers/edit/:id" element={<UpdateCustomer />} />
     <Route path="products" element={<ProductList />} />

@@ -1,7 +1,7 @@
 // src/admin/pages/CustomerList.jsx
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-//import adminAxios from '../api/axiosAdmin';
+import adminAxios from '../../api/axiosAdmin';
 import './styles/CustomerList.css';
 
 const exportToCSV = (customers) => {
