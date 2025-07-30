@@ -215,7 +215,7 @@ const CreateCustomer = () => {
             setErrors({});
 
             // Redirect after a short delay for user to see success message
-            setTimeout(() => navigate('customers'), 1500);
+            setTimeout(() => navigate('/admin/customers/list'), 1500);
 
         } catch (error) {
             console.error("Error creating customer:", error);

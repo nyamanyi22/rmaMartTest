@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './styles/Modal.css'; // Import the CSS file
 
 /**
  * Reusable Message Modal Component.
@@ -12,27 +13,26 @@ import PropTypes from 'prop-types';
  * @param {function} [props.onConfirm] - Optional function to call for 'confirm' type modals when confirmed.
  */
 const MessageModal = ({ message, type, onClose, onConfirm }) => {
-  const bgColor = type === 'success' ? 'bg-green-100' : (type === 'error' ? 'bg-red-100' : 'bg-blue-100');
-  const textColor = type === 'success' ? 'text-green-800' : (type === 'error' ? 'text-red-800' : 'text-blue-800');
-  const borderColor = type === 'success' ? 'border-green-400' : (type === 'error' ? 'border-red-400' : 'border-blue-400');
-  const buttonColor = type === 'confirm' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700';
+  // Determine class names based on type
+  const modalTypeClass = `modal-type-${type}`;
+  const buttonTypeClass = `btn-type-${type}`;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
-      <div className={`relative p-6 rounded-lg shadow-xl max-w-sm w-full ${bgColor} border ${borderColor}`}>
-        <p className={`text-center font-semibold ${textColor}`}>{message}</p>
+    <div className="modal-overlay">
+      <div className={`modal-content ${modalTypeClass}`}>
+        <p className="modal-message">{message}</p>
 
         {type === 'confirm' ? (
-          <div className="flex justify-around mt-4 gap-4">
+          <div className="modal-actions-confirm">
             <button
               onClick={onConfirm}
-              className="flex-1 bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition"
+              className="modal-button modal-button-confirm"
             >
               Confirm
             </button>
             <button
               onClick={onClose}
-              className="flex-1 bg-gray-400 text-white p-2 rounded-md hover:bg-gray-500 transition"
+              className="modal-button modal-button-cancel"
             >
               Cancel
             </button>
@@ -40,7 +40,7 @@ const MessageModal = ({ message, type, onClose, onConfirm }) => {
         ) : (
           <button
             onClick={onClose}
-            className={`mt-4 w-full text-white p-2 rounded-md transition ${buttonColor}`}
+            className={`modal-button ${buttonTypeClass}`}
           >
             Close
           </button>

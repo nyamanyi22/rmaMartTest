@@ -19,7 +19,7 @@ import AdminProfile from './pages/Admin/AdminProfile';
 import AdminLogin from './Components/AdminLogin';
 import RequireAdminAuth from './Components/RequireAdminAuth';
 import AdminCreateForm from './AdminContex/AdminCreateForm';
-import AdminList from './Components/UserList';
+import AdminList from './AdminContex/UserList';
 
 const AdminRoutes = [
   <Route path="/admin/login" element={<AdminLogin />} key="admin-login" />,
@@ -41,7 +41,7 @@ const AdminRoutes = [
     <Route path="rmas/bulk" element={<BulkManagement />} />
     <Route path="rmas/processing" element={<ProcessingRmas />} />
     <Route path="rmas/manage" element={<ManageCases />} />
-    <Route path="customers" element={<CustomerList />} />
+    <Route path="customers/list" element={<CustomerList />} />
     <Route path="customers/create" element={<CreateCustomer />} />
       <Route path="customers/edit/:id" element={<UpdateCustomer />} />
     <Route path="products" element={<ProductList />} />
