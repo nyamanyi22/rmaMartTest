@@ -251,6 +251,7 @@ const CreateCustomer = () => {
     return (
         <AdminCustomerForm
             formData={formData}
+            setFormData={setFormData}
             handleChange={handleChange}
             handleCheckboxChange={handleCheckboxChange} // Pass the new checkbox handler
             errors={errors}

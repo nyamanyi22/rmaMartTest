@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MessageModal from '../../Components/MessageModal'; // Import the MessageModal component
+import { useEffect } from 'react';
 
 // Static list of countries
 const countries = [

@@ -307,6 +307,7 @@ const EditCustomer = () => {
             {/* The title will be rendered by AdminCustomerForm based on isEditMode */}
             <AdminCustomerForm
                 formData={formData}
+                setFormData={setFormData}
                 handleChange={handleChange}
                 handleCheckboxChange={handleCheckboxChange}
                 errors={errors}

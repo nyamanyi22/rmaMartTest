@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { fetchCustomers, deleteCustomer } from '../../api/CustomerService';
 import MessageModal from '../../Components/MessageModal';
 import './styles/CustomerList.css';
+import { useMemo } from 'react';
+import {useDebounce} from '../../hooks/useDebounce';
 
 const exportToCSV = (customers) => {
     if (!customers.length) return;
@@ -53,6 +55,7 @@ const exportToCSV = (customers) => {
 const CustomerList = () => {
     const [customers, setCustomers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+     const debouncedSearch = useDebounce(searchQuery, 300);
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -81,11 +84,15 @@ const CustomerList = () => {
         getCustomers(currentPage, searchQuery);
     }, [currentPage, searchQuery, getCustomers]);
 
-    const filteredCustomers = Array.isArray(customers) ? customers.filter((c) =>
-        [c.first_name, c.last_name, c.email, c.company_name, c.account_no].join(' ')
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-    ) : [];
+  const filteredCustomers = useMemo(() => {
+    if (!Array.isArray(customers)) return [];
+    return customers.filter((c) =>
+      [c.first_name, c.last_name, c.email, c.company_name, c.account_no]
+        .join(' ')
+        .toLowerCase()
+        .includes(debouncedSearch.toLowerCase())
+    );
+  }, [customers, debouncedSearch]);
 
     const indexOfLast = currentPage * itemsPerPage;
     const indexOfFirst = indexOfLast - itemsPerPage;
