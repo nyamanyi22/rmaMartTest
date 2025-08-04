@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import RmaTable from '../../Components/RmaTable'; 
-import RmaFilters from '../../Components/RmaFilters'; 
-import Pagination from '../../Components/Pagination' ; 
-import StatusBadge from '../../Components/StatusBadge'; 
-import { fetchRmas } from '../../rmaService'; 
+import RmaTable from '../../Components/RmaTable';
+import RmaFilters from '../../Components/RmaFilters';
+import Pagination from '../../Components/Pagination';
+import StatusBadge from '../../Components/StatusBadge';
+import { fetchRmas, updateRmaStatus } from '../../api/rmaService';
 import './styles/RmaDashboard.css';
 
 
@@ -54,13 +54,14 @@ const RmaDashboard = () => {
         }
       });
 
+      // Map Laravel's pagination keys to your state keys
       setData({
         rmas: response.data,
         pagination: {
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          totalItems: response.totalItems,
-          itemsPerPage: response.itemsPerPage
+          currentPage: response.meta.current_page,
+          totalPages: response.meta.last_page,
+          totalItems: response.meta.total,
+          itemsPerPage: response.meta.per_page
         }
       });
       setSelectedItems([]); // Clear selection on new data fetch
@@ -99,7 +100,8 @@ const RmaDashboard = () => {
   };
 
   const handleViewItem = (item) => {
-    navigate(`/admin/rmas/${item.id}`);
+    // Corrected navigation to match the backend route
+    navigate(`/admin/rma-requests/${item.id}`);
   };
 
   const handleBulkStatusUpdate = async (newStatus) => {
@@ -175,7 +177,7 @@ const RmaDashboard = () => {
 
   return (
     <div className="rma-dashboard">
-    
+
       <header className="dashboard-header">
         <h1>RMA Management</h1>
         <div className="header-actions">
@@ -258,7 +260,7 @@ const RmaDashboard = () => {
       <div className="mt-2 text-sm text-gray-600 text-center">
         Showing {data.rmas.length} of {data.pagination.totalItems} RMAs
       </div>
- 
+
     </div>
   );
 };

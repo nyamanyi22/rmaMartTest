@@ -6,7 +6,7 @@ import RmaDetailPage from './pages/rmas/RmaDetailPag';
 import RejectedRmas from './pages/rmas/RejectedRmas';
 import PendingRmas from './pages/rmas/PendingRmas';
 import ApprovedRmas from './pages/rmas/ApprovedRmas';
-import BulkManagement from './pages/rmas/BulkManagement';
+import BulkManagement from './pages/rmas/BulkMAnagement';
 import ProcessingRmas from './pages/rmas/Processing';
 import ManageCases from './pages/cases/ManageCases';
 import CustomerList from './pages/customers/CustomerList'; // New List Component

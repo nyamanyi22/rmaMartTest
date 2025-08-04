@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import RmaTable from '../../Components/RmaTable';
 
-import { fetchRmas, bulkUpdateRma } from '../../rmaService';
+import { fetchRmas, bulkUpdateRma } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
 import Pagination from '../../Components/Pagination';
 import './styles/ProcessingRma.css'; 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types'; // Keep PropTypes if your component were to receive props
 import RmaTable from '../../Components/RmaTable';
-import { fetchRmas } from '../../rmaService';
+import { fetchRmas } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
 import Pagination from '../../Components/Pagination';
 import RmaFilters from '../../Components/RmaFilters'; // Make sure this path is correct
