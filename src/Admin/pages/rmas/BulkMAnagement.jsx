@@ -3,7 +3,7 @@ import RmaTable from '../../Components/RmaTable';
 import BulkAction from '../../Components/BulkAction';
 import Pagination from '../../Components/Pagination';
 import RmaFilters from '../../Components/RmaFilters';
-import { fetchRmas, bulkUpdateRma, exportRmas } from '../../api/rmaService';
+import { fetchRmas, bulkUpdateRmaStatus as bulkUpdateRma, exportRmas } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
 import { HiArrowPath, HiMagnifyingGlass } from 'react-icons/hi2';
 import { HiArrowDownTray } from 'react-icons/hi2';

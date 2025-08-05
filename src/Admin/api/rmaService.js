@@ -3,27 +3,6 @@
 // src/admin/api/axiosAdmin.js
 import axiosAdmin from "./axiosAdmin";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-const axiosAdmin = axios.create({
-  baseURL: `${API_BASE_URL}/api/admin`, // All admin routes start here
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const token = localStorage.getItem('adminToken');
-
-// Add Authorization Header Automatically (if using token)
-axiosAdmin.interceptors.request.use((config) => {
-  const token = localStorage.getItem('adminToken'); // Use admin token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export default axiosAdmin;
 
 // ✅ Fetch paginated + filtered RMAs
 export const fetchRmas = async ({ page = 1, limit = 20, filters = {} }) => {
@@ -38,8 +17,13 @@ export const fetchRmas = async ({ page = 1, limit = 20, filters = {} }) => {
       returnReason: filters.returnReason || ''
     }
   });
-  return response.data; // Should include data.meta.current_page etc.
+
+  console.log("Raw response from fetchRmas:", response); // ✅ Moved above return
+
+  return response.data;
 };
+
+
 
 // ✅ Update one RMA status
 export const updateRmaStatus = async (id, newStatus) => {
