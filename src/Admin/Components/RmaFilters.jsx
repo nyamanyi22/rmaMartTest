@@ -2,30 +2,58 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './styles/RmaFilters.css'; // Adjust the path as necessary
+import './styles/RmaFilters.css';
 
-const RmaFilters = ({ 
-  filters, 
-  onFilterChange, 
-  onReset,
-  onSavePreset 
-}) => {
+const RmaFilters = ({ filters, onFilterChange, onReset, onSavePreset }) => {
   const [localFilters, setLocalFilters] = useState(filters);
   const [presetName, setPresetName] = useState('');
   const [showPresetModal, setShowPresetModal] = useState(false);
+  const [statusOptions, setStatusOptions] = useState([{ value: 'all', label: 'All Statuses' }]);
+  const [loadingStatuses, setLoadingStatuses] = useState(false);
+  const [errorStatuses, setErrorStatuses] = useState(null);
 
-  // Sync local state with props
+  // Sync localFilters with filters prop
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
 
-  // Debounce filter changes
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onFilterChange(localFilters);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [localFilters, onFilterChange]);
+  // Fetch status options from API on mount
+ useEffect(() => {
+  async function fetchStatuses() {
+    setLoadingStatuses(true);
+    setErrorStatuses(null);
+    try {
+      const res = await fetch('/api/admin/rma-statuses', {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      const data = await res.json();
+
+      const apiStatuses = data.statuses.map(s => ({
+        value: s.value.toLowerCase(),
+        label: s.label || (s.name.charAt(0) + s.name.slice(1).toLowerCase()),
+      }));
+
+      setStatusOptions([{ value: 'all', label: 'All Statuses' }, ...apiStatuses]);
+    } catch (error) {
+      console.error('Error loading statuses:', error);
+      setErrorStatuses('Failed to load statuses');
+    } finally {
+      setLoadingStatuses(false);
+    }
+  }
+  fetchStatuses();
+}, []);
+
+
+  // Debounce filter changes before notifying parent
+useEffect(() => {
+  const timer = setTimeout(() => {
+    onFilterChange(localFilters);
+  }, 300);
+
+  return () => clearTimeout(timer);
+}, [localFilters, onFilterChange]);
 
   const handleChange = (name, value) => {
     setLocalFilters(prev => ({ ...prev, [name]: value }));
@@ -38,15 +66,6 @@ const RmaFilters = ({
     }));
   };
 
-  const statusOptions = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'rejected', label: 'Rejected' },
-    { value: 'shipped', label: 'Shipped' },
-    { value: 'completed', label: 'Completed' }
-  ];
-
   const returnReasons = [
     'Defective',
     'Wrong Item',
@@ -56,10 +75,7 @@ const RmaFilters = ({
 
   const saveCurrentPreset = () => {
     if (presetName.trim()) {
-      onSavePreset({
-        name: presetName,
-        filters: localFilters
-      });
+      onSavePreset({ name: presetName, filters: localFilters });
       setPresetName('');
       setShowPresetModal(false);
     }
@@ -74,26 +90,30 @@ const RmaFilters = ({
             id="search"
             type="text"
             placeholder="RMA #, customer, product..."
-            value={localFilters.search}
-            onChange={(e) => handleChange('search', e.target.value)}
+            value={localFilters.search || ''}
+            onChange={e => handleChange('search', e.target.value)}
             aria-label="Search RMAs"
           />
         </div>
 
         <div className="filter-group">
           <label htmlFor="status">Status</label>
-          <select
-            id="status"
-            value={localFilters.status}
-            onChange={(e) => handleChange('status', e.target.value)}
-            aria-label="Filter by status"
-          >
-            {statusOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          {loadingStatuses ? (
+            <p>Loading statuses...</p>
+          ) : errorStatuses ? (
+            <p className="error">{errorStatuses}</p>
+          ) : (
+            <select
+              id="status"
+              value={localFilters.status || 'all'}
+              onChange={e => handleChange('status', e.target.value)}
+              aria-label="Filter by status"
+            >
+              {statusOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="filter-group">
@@ -101,7 +121,7 @@ const RmaFilters = ({
           <select
             id="returnReason"
             value={localFilters.returnReason || ''}
-            onChange={(e) => handleChange('returnReason', e.target.value || null)}
+            onChange={e => handleChange('returnReason', e.target.value || null)}
             aria-label="Filter by return reason"
           >
             <option value="">All Reasons</option>
@@ -117,23 +137,23 @@ const RmaFilters = ({
           <label>Date Range</label>
           <div className="date-pickers">
             <DatePicker
-              selected={localFilters.dateRange.start}
-              onChange={(date) => handleDateChange('start', date)}
+              selected={localFilters.dateRange?.start || null}
+              onChange={date => handleDateChange('start', date)}
               selectsStart
-              startDate={localFilters.dateRange.start}
-              endDate={localFilters.dateRange.end}
+              startDate={localFilters.dateRange?.start || null}
+              endDate={localFilters.dateRange?.end || null}
               placeholderText="Start date"
               className="date-input"
               maxDate={new Date()}
             />
             <span className="date-separator">to</span>
             <DatePicker
-              selected={localFilters.dateRange.end}
-              onChange={(date) => handleDateChange('end', date)}
+              selected={localFilters.dateRange?.end || null}
+              onChange={date => handleDateChange('end', date)}
               selectsEnd
-              startDate={localFilters.dateRange.start}
-              endDate={localFilters.dateRange.end}
-              minDate={localFilters.dateRange.start}
+              startDate={localFilters.dateRange?.start || null}
+              endDate={localFilters.dateRange?.end || null}
+              minDate={localFilters.dateRange?.start || null}
               placeholderText="End date"
               className="date-input"
               maxDate={new Date()}
@@ -155,9 +175,9 @@ const RmaFilters = ({
             className="reset-btn"
             disabled={
               !localFilters.search &&
-              localFilters.status === 'all' &&
-              !localFilters.dateRange.start &&
-              !localFilters.dateRange.end &&
+              (localFilters.status === 'all' || !localFilters.status) &&
+              (!localFilters.dateRange?.start) &&
+              (!localFilters.dateRange?.end) &&
               !localFilters.returnReason
             }
             aria-label="Reset filters"
@@ -174,16 +194,13 @@ const RmaFilters = ({
             <input
               type="text"
               value={presetName}
-              onChange={(e) => setPresetName(e.target.value)}
+              onChange={e => setPresetName(e.target.value)}
               placeholder="Preset name"
               className="preset-input"
             />
             <div className="modal-actions">
               <button onClick={() => setShowPresetModal(false)}>Cancel</button>
-              <button 
-                onClick={saveCurrentPreset}
-                disabled={!presetName.trim()}
-              >
+              <button onClick={saveCurrentPreset} disabled={!presetName.trim()}>
                 Save
               </button>
             </div>

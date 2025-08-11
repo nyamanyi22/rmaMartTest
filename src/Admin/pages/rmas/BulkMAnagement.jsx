@@ -39,26 +39,27 @@ const BulkManagement = () => {
       setError(null);
       const response = await fetchRmas({
         page: pagination.page,
-        perPage: pagination.perPage,
+        limit: pagination.perPage,     // Use "limit" to match your API param name
         filters: {
           search: debouncedSearch,
           status: filters.status === 'all' ? null : filters.status,
           returnReason: filters.returnReason || null,
-          dateFrom: filters.dateRange.start,
-          dateTo: filters.dateRange.end
+          startDate: filters.dateRange.start,
+          endDate: filters.dateRange.end
         },
         sort,
         signal: abortController.signal
       });
 
       if (!abortController.signal.aborted) {
-        setRmas(response.data);
+        setRmas(response.data);  // response.data is array of RMAs
         setPagination(prev => ({
           ...prev,
           total: response.total,
-          page: response.page
+          page: response.current_page
         }));
-        if (pagination.page !== response.page || debouncedSearch) {
+
+        if (pagination.page !== response.current_page || debouncedSearch) {
           setSelectedIds([]);
         }
       }
@@ -76,8 +77,50 @@ const BulkManagement = () => {
   }, [pagination.page, pagination.perPage, debouncedSearch, sort, filters]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData, refreshToken]);
+    const abortController = new AbortController();
+
+    fetchRmas({
+      page: pagination.page,
+      limit: pagination.perPage,
+      filters: {
+        search: debouncedSearch,
+        status: filters.status === 'all' ? null : filters.status,
+        returnReason: filters.returnReason || null,
+        startDate: filters.dateRange.start,
+        endDate: filters.dateRange.end
+      },
+      sort,
+      signal: abortController.signal
+    })
+      .then(response => {
+        if (!abortController.signal.aborted) {
+          setRmas(response.data);
+          setPagination(prev => ({
+            ...prev,
+            total: response.total,
+            page: response.current_page
+          }));
+          if (pagination.page !== response.current_page || debouncedSearch) {
+            setSelectedIds([]);
+          }
+          setError(null);
+        }
+      })
+      .catch(err => {
+        if (!abortController.signal.aborted) {
+          setError(err.response?.data?.message || err.message || 'Failed to fetch RMAs');
+        }
+      })
+      .finally(() => {
+        if (!abortController.signal.aborted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [pagination.page, pagination.perPage, debouncedSearch, sort, filters, refreshToken]);
 
   const handleSelect = useCallback((id) => {
     setSelectedIds(prev => {
@@ -123,16 +166,23 @@ const BulkManagement = () => {
     }
   };
 
-  const handleExport = async (ids = null) => {
+  const handleExport = async () => {
     try {
       setIsExporting(true);
-      const exportIds = ids || selectedIds;
-      const blob = await exportRmas(exportIds.length ? exportIds : null);
+
+      // Export using current filters, not IDs, because your backend expects filters
+      const blob = await exportRmas({
+        search: filters.search,
+        status: filters.status === 'all' ? null : filters.status,
+        returnReason: filters.returnReason || null,
+        startDate: filters.dateRange.start,
+        endDate: filters.dateRange.end
+      });
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `RMAs_${new Date().toISOString().slice(0,10)}.xlsx`;
+      a.download = `RMAs_${new Date().toISOString().slice(0,10)}.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -147,7 +197,7 @@ const BulkManagement = () => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') setSelectedIds([]);
-      if (e.ctrlKey && e.key === 'a') {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
         e.preventDefault();
         handleSelectAll();
       }
@@ -157,111 +207,94 @@ const BulkManagement = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSelectAll]);
 
-return (
-  <div className="bulk-management-container">
-    <div className="header-row">
-      <div className="title-section">
-        <h2>Bulk RMA Management</h2>
-        <button 
-          onClick={handleRefresh} 
-          className="icon-button"
-          disabled={isLoading}
-          aria-label="Refresh data"
-        >
-          <HiArrowPath size={20} className="icon" />
-        </button>
-      </div>
-
-      <div className="controls">
-        <RmaFilters
-          filters={filters}
-          onFilterChange={(updatedFilters) => {
-            setFilters(updatedFilters);
-            setPagination(prev => ({ ...prev, page: 1 }));
-          }}
-          onReset={() => {
-            setFilters({
-              search: '',
-              status: 'all',
-              returnReason: '',
-              dateRange: { start: null, end: null }
-            });
-            setPagination(prev => ({ ...prev, page: 1 }));
-          }}
-          onSavePreset={(preset) => {
-            console.log('Saved preset:', preset);
-          }}
-        />
-
-        <button 
-          onClick={() => handleExport()} 
-          className="icon-button"
-          disabled={isExporting}
-          aria-label="Export data"
-        >
-          <HiArrowDownTray size={20} className="icon" />
-        </button>
-      </div>
-    </div>
-
-    {error && (
-      <div className="error-message">
-        {error}
-        <button onClick={handleRefresh}>Retry</button>
-      </div>
-    )}
-
-    <RmaTable
-      data={rmas}
-      isLoading={isLoading}
-      sortConfig={sort}
-      onSort={handleSort}
-      onSelect={handleSelect}
-      onSelectAll={handleSelectAll}
-      selectedIds={selectedIds}
-      emptyMessage={
-        isLoading ? 'Loading RMAs...' : 
-        debouncedSearch ? 'No matching RMAs found' : 
-        'No RMAs available with current filters'
-      }
-    />
-
-    {pagination.total > 0 && (
-      <div className="pagination-container">
-        <div className="results-count">
-          Showing {(pagination.page - 1) * pagination.perPage + 1}-
-          {Math.min(pagination.page * pagination.perPage, pagination.total)} 
-          of {pagination.total} RMAs
+  return (
+    <div className="bulk-management-container">
+      <div className="header-row">
+        <div className="title-section">
+          <h2>Bulk RMA Management</h2>
+          <button
+            onClick={handleRefresh}
+            className="icon-button"
+            disabled={isLoading}
+            aria-label="Refresh data"
+          >
+            <HiArrowPath size={20} className="icon" />
+          </button>
         </div>
-        <Pagination
-          currentPage={pagination.page}
-          totalPages={Math.ceil(pagination.total / pagination.perPage)}
-          onPageChange={handlePageChange}
-          disabled={isLoading}
-        />
-      </div>
-    )}
 
-    <BulkAction
-      selectedCount={selectedIds.length}
-      onApprove={() => handleBulkAction('approve')}
-      onReject={() => {
-        if (confirm(`Reject ${selectedIds.length} selected RMAs?`)) {
-          handleBulkAction('reject');
+        <div className="controls">
+          <RmaFilters
+            filters={filters}
+            onFilterChange={(updatedFilters) => {
+              setFilters(updatedFilters);
+              setPagination(prev => ({ ...prev, page: 1 }));
+            }}
+            onReset={() => {
+              setFilters({
+                search: '',
+                status: 'all',
+                returnReason: '',
+                dateRange: { start: null, end: null }
+              });
+              setPagination(prev => ({ ...prev, page: 1 }));
+            }}
+            onSavePreset={(preset) => {
+              console.log('Saved preset:', preset);
+            }}
+          />
+
+          <button
+            onClick={handleExport}
+            className="icon-button"
+            disabled={isExporting}
+            aria-label="Export data"
+          >
+            <HiArrowDownTray size={20} className="icon" />
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="error-message">
+          {error}
+          <button onClick={handleRefresh}>Retry</button>
+        </div>
+      )}
+
+      <RmaTable
+        data={rmas}
+        isLoading={isLoading}
+        sortConfig={sort}
+        onSort={handleSort}
+        onSelect={handleSelect}
+        onSelectAll={handleSelectAll}
+        selectedIds={selectedIds}
+        emptyMessage={
+          isLoading ? 'Loading RMAs...' :
+          debouncedSearch ? 'No matching RMAs found' :
+          'No RMAs available with current filters'
         }
-      }}
-      onProcess={() => handleBulkAction('processing')}
-      onClearSelection={() => setSelectedIds([])}
-      isProcessing={isLoading}
-      customActions={[
-        {
-          label: `Export Selected (${selectedIds.length})`,
-          action: () => handleExport(selectedIds),
-          className: 'export-btn'
-        }
-      ]}
-    />
-  </div>
-);
-}
+      />
+
+      {pagination.total > 0 && (
+        <div className="pagination-container">
+          <div className="results-count">
+            Showing {(pagination.page - 1) * pagination.perPage + 1}-
+            {Math.min(pagination.page * pagination.perPage, pagination.total)}
+            {' '}of {pagination.total} RMAs
+          </div>
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={Math.ceil(pagination.total / pagination.perPage)}
+            onPageChange={handlePageChange}
+            disabled={isLoading}
+          />
+        </div>
+      )}
+
+      <BulkAction />
+    </div>
+  );
+};
+
 export default BulkManagement;

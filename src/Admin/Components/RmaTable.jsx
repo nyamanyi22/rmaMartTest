@@ -18,7 +18,7 @@ const RmaTable = ({
   onRowClick = () => {},
   onViewItem = () => {},
   onPageChange = () => {},
-  pagination = null, // added
+  pagination = null,
   className = '',
   emptyState = <div className="empty-state">No RMAs available</div>
 }) => {
@@ -29,6 +29,13 @@ const RmaTable = ({
 
   const getNestedValue = (obj, path) =>
     path.split('.').reduce((o, p) => (o || {})[p], obj);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString();
+  };
 
   const requestSort = (key) => {
     setSortConfig((prev) => ({
@@ -84,7 +91,7 @@ const RmaTable = ({
           </span>
         );
       case 'dateCreated':
-        return new Date(item.dateCreated).toLocaleDateString();
+        return formatDate(item.dateCreated);
       case 'actions':
         return (
           <div className="actions-cell">
@@ -95,6 +102,15 @@ const RmaTable = ({
         return getNestedValue(item, column.key) || '-';
     }
   };
+
+  // Pagination range calculation
+  const currentPage = pagination?.current_page ?? 1;
+const perPage = pagination?.per_page ?? data.length;
+const total = pagination?.total ?? data.length;
+
+const start = total === 0 ? 0 : (currentPage - 1) * perPage + 1;
+const end = Math.min(currentPage * perPage, total);
+
 
   return (
     <div className={`rma-table-container ${className}`}>
@@ -160,7 +176,7 @@ const RmaTable = ({
           {/* Footer summary and pagination */}
           <div className="table-footer mt-4 flex justify-between items-center">
             <p className="text-sm text-gray-600">
-              Showing {data.length} of {pagination?.total || data.length} RMAs
+              Showing {start}-{end} of {total} RMAs
             </p>
 
             {pagination && pagination.total > pagination.per_page && (

@@ -35,7 +35,7 @@ const AdminRoutes = [
     key="admin-root"
   >
     <Route path="rmas/dashboard" element={<RmaDashboard />} />
-    <Route path="rma/:id" element={<RmaDetailPage />} />
+    <Route path="rma-detail/:id" element={<RmaDetailPage />} />
     <Route path="rmas/rejected" element={<RejectedRmas />} />
     <Route path="rmas/pending" element={<PendingRmas />} />
     <Route path="rmas/approved" element={<ApprovedRmas />} />

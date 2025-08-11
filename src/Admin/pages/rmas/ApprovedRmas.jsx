@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom'; // Added for navigation
+import PropTypes from 'prop-types';
 import RmaTable from '../../Components/RmaTable';
 import { fetchRmas } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -6,12 +8,15 @@ import Pagination from '../../Components/Pagination';
 import RmaFilters from '../../Components/RmaFilters';
 import { HiArrowPath } from 'react-icons/hi2';
 
-import './styles/PendingRma.css';// Make sure this CSS file exists (you can copy from PendingRma.css)
+//import './styles/ApprovedRma.css'; // Changed CSS file name for clarity
 
 const ApprovedRmas = () => {
+  // Initialize the useNavigate hook
+  const navigate = useNavigate();
+
   const [filters, setFilters] = useState({
     search: '',
-    status: 'approved', // ✅ Change to 'approved'
+    status: 'approved', // ✅ Correctly set to 'approved'
     dateRange: { start: null, end: null },
     returnReason: null
   });
@@ -105,7 +110,14 @@ const ApprovedRmas = () => {
   const handleSavePreset = useCallback((preset) => {
     console.log('Saving approved RMA filter preset:', preset);
   }, []);
+  
+  // This is the navigation handler function
+  const handleViewRma = useCallback((rma) => {
+    // Navigate to the detail page using the RMA's unique ID
+    navigate(`/admin/rma-detail/${rma.id}`);
+  }, [navigate]);
 
+  // Determine if any filters are active (excluding the default 'approved' status)
   const isAnyFilterActive =
     debouncedFilters.search ||
     debouncedFilters.returnReason ||
@@ -147,7 +159,8 @@ const ApprovedRmas = () => {
           isLoading={isLoading}
           sortConfig={sort}
           onSort={handleSort}
-          onRowClick={(rma) => console.log('Clicked Approved RMA:', rma)}
+          // The onRowClick prop is now connected to the navigation function
+          onRowClick={handleViewRma}
           emptyMessage={
             isLoading
               ? 'Loading RMAs...'
@@ -176,4 +189,8 @@ const ApprovedRmas = () => {
   );
 };
 
+ApprovedRmas.propTypes = {
+};
+
 export default ApprovedRmas;
+

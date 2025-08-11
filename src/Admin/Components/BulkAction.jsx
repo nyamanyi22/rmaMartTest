@@ -1,3 +1,4 @@
+// BulkAction.jsx
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import './styles/BulkAction.css';
@@ -7,11 +8,13 @@ const BulkAction = ({
   onApprove,
   onReject,
   onProcess,
+  onComplete, // Added for "Complete" action
   onClearSelection,
   isProcessing = false,
-  availableActions = ['approve', 'reject', 'process', 'clear'],
+  availableActions = ['approve', 'reject', 'process', 'complete', 'clear'],
   customActions = []
 }) => {
+  // Escape key handler for clearing selection
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (selectedCount > 0 && e.key === 'Escape') {
@@ -22,6 +25,7 @@ const BulkAction = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCount, onClearSelection]);
 
+  // Hide toolbar if nothing is selected
   if (selectedCount === 0) return null;
 
   return (
@@ -63,6 +67,17 @@ const BulkAction = ({
             Processing
           </button>
         )}
+
+        {availableActions.includes('complete') && (
+          <button
+            className="complete-btn"
+            onClick={onComplete}
+            disabled={isProcessing}
+            aria-label="Mark selected items as completed"
+          >
+            Complete
+          </button>
+        )}
         
         {customActions.map((action, i) => (
           <button
@@ -94,10 +109,11 @@ BulkAction.propTypes = {
   onApprove: PropTypes.func,
   onReject: PropTypes.func,
   onProcess: PropTypes.func,
+  onComplete: PropTypes.func, // Added for new action
   onClearSelection: PropTypes.func.isRequired,
   isProcessing: PropTypes.bool,
   availableActions: PropTypes.arrayOf(
-    PropTypes.oneOf(['approve', 'reject', 'process', 'clear'])
+    PropTypes.oneOf(['approve', 'reject', 'process', 'complete', 'clear'])
   ),
   customActions: PropTypes.arrayOf(
     PropTypes.shape({

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import RmaTable from '../../Components/RmaTable';
 import { fetchRmas } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -6,9 +7,12 @@ import Pagination from '../../Components/Pagination';
 import RmaFilters from '../../Components/RmaFilters';
 import { HiArrowPath } from 'react-icons/hi2';
 
-import './styles/RejectedRmas.css';
+//import './styles/RejectedRmas.css';
 
 const RejectedRmas = () => {
+  // Initialize the useNavigate hook to get the navigation function
+  const navigate = useNavigate();
+
   const [filters, setFilters] = useState({
     search: '',
     status: 'rejected',
@@ -106,6 +110,12 @@ const RejectedRmas = () => {
   const handleSavePreset = useCallback((preset) => {
     console.log('Saving rejected RMA preset:', preset);
   }, []);
+  
+  // This is the new navigation handler function
+  const handleViewRma = useCallback((rma) => {
+    // Use navigate to go to the RMA detail page
+    navigate(`/admin/rma-detail/${rma.id}`);
+  }, [navigate]); // Add navigate to the dependency array
 
   const isAnyFilterActive =
     debouncedFilters.search ||
@@ -148,7 +158,8 @@ const RejectedRmas = () => {
           isLoading={isLoading}
           sortConfig={sort}
           onSort={handleSort}
-          onRowClick={(rma) => console.log('Clicked Rejected RMA:', rma)}
+          // The onRowClick prop now calls our new navigation handler
+          onRowClick={handleViewRma}
           emptyMessage={
             isLoading
               ? 'Loading RMAs...'

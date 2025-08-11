@@ -14,6 +14,8 @@ import Login from './components/Login';
 import PreRequest from './Pages/PreRMARequest';
 import RMARequest from './Pages/RMARequest';
 import PrivateRoute from './components/PrivateRoute';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Admin Routes (already defined as <Route> elements)
 import AdminRoutes from './Admin/adminRoutes';
@@ -35,6 +37,7 @@ function App() {
           {/* admin routes */}
           {AdminRoutes}
         </Routes>
+         <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       </AdminAuthProvider>
     </AuthProvider>
   );

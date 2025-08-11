@@ -89,7 +89,7 @@ const RmaDashboard = () => {
   };
 
   const handleViewItem = (item) => {
-    navigate(`/admin/rma-requests/${item.id}`);
+    navigate(`/admin/rma-detail/${item.id}`);
   };
 
   const handleBulkStatusUpdate = async (newStatus) => {

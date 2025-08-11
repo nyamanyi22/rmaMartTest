@@ -65,6 +65,6 @@ export const deleteRma = async (id) => {
 
 // ✅ Fetch valid status options
 export const fetchStatusOptions = async () => {
-  const res = await axiosAdmin.get('/rmas/status-options');
+  const res = await axiosAdmin.get('/rma-statuses');
   return res.data; // Should be array of status strings
 };
