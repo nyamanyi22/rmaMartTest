@@ -64,7 +64,18 @@ export const deleteRma = async (id) => {
 };
 
 // ✅ Fetch valid status options
+// ✅ Fetch valid status options (with credentials + JSON header)
 export const fetchStatusOptions = async () => {
-  const res = await axiosAdmin.get('/rma-statuses');
-  return res.data; // Should be array of status strings
+  try {
+    const res = await axiosAdmin.get('/rma-statuses', {
+      withCredentials: true,
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+    return res.data.statuses; // Since your backend returns { statuses: [...] }
+  } catch (error) {
+    console.error('Error loading statuses:', error);
+    throw error;
+  }
 };

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './styles/RmaFilters.css';
+import { fetchStatusOptions } from '../api/rmaService';
 
 const RmaFilters = ({ filters, onFilterChange, onReset, onSavePreset }) => {
   const [localFilters, setLocalFilters] = useState(filters);
@@ -18,20 +19,19 @@ const RmaFilters = ({ filters, onFilterChange, onReset, onSavePreset }) => {
   }, [filters]);
 
   // Fetch status options from API on mount
- useEffect(() => {
+// Import at the top
+
+
+useEffect(() => {
   async function fetchStatuses() {
     setLoadingStatuses(true);
     setErrorStatuses(null);
     try {
-      const res = await fetch('/api/admin/rma-statuses', {
-        credentials: 'include',
-      });
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-      const data = await res.json();
+      const statuses = await fetchStatusOptions();
 
-      const apiStatuses = data.statuses.map(s => ({
+      const apiStatuses = statuses.map(s => ({
         value: s.value.toLowerCase(),
-        label: s.label || (s.name.charAt(0) + s.name.slice(1).toLowerCase()),
+        label: s.label || s.value.charAt(0) + s.value.slice(1).toLowerCase(),
       }));
 
       setStatusOptions([{ value: 'all', label: 'All Statuses' }, ...apiStatuses]);
@@ -44,6 +44,7 @@ const RmaFilters = ({ filters, onFilterChange, onReset, onSavePreset }) => {
   }
   fetchStatuses();
 }, []);
+
 
 
   // Debounce filter changes before notifying parent

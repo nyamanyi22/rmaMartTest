@@ -5,11 +5,12 @@ import './styles/RmaTable.css';
 const RmaTable = ({
   data = [],
   columns = [
-    { key: 'rmaNumber', label: 'RMA Number', sortable: true },
-    { key: 'customer.name', label: 'Customer', sortable: true },
+    { key: 'rma_number', label: 'RMA Number', sortable: true },
+    { key: 'customer.first_name', label: 'Customer', sortable: true },
+    { key: 'product.name', label: 'Product', sortable: true }, // optional if you eager-load product
     { key: 'status', label: 'Status', sortable: true },
-    { key: 'dateCreated', label: 'Date Created', sortable: true },
-    { key: 'actions', label: 'Actions', sortable: false }
+    { key: 'created_at', label: 'Date Created', sortable: true },
+    { key: 'actions', label: 'Actions', sortable: false },
   ],
   isLoading = false,
   selectable = true,
@@ -20,27 +21,23 @@ const RmaTable = ({
   onPageChange = () => {},
   pagination = null,
   className = '',
-  emptyState = <div className="empty-state">No RMAs available</div>
+  emptyState = <div className="empty-state">No RMAs available</div>,
 }) => {
-  const [sortConfig, setSortConfig] = useState({
-    key: 'dateCreated',
-    direction: 'desc'
-  });
+  const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
 
-  const getNestedValue = (obj, path) =>
-    path.split('.').reduce((o, p) => (o || {})[p], obj);
+  // Helper to get nested properties like customer.name
+  const getNestedValue = (obj, path) => path.split('.').reduce((o, p) => (o ? o[p] : undefined), obj);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '-';
-    return date.toLocaleDateString();
+    return isNaN(date.getTime()) ? '-' : date.toLocaleString();
   };
 
   const requestSort = (key) => {
     setSortConfig((prev) => ({
       key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
 
@@ -79,19 +76,11 @@ const RmaTable = ({
   };
 
   const renderCellContent = (item, column) => {
-    if (column.render) {
-      return column.render(getNestedValue(item, column.key), item);
-    }
-
     switch (column.key) {
       case 'status':
-        return (
-          <span className={`status-badge ${item.status?.toLowerCase()}`}>
-            {item.status}
-          </span>
-        );
-      case 'dateCreated':
-        return formatDate(item.dateCreated);
+        return <span className={`status-badge ${item.status?.toLowerCase()}`}>{item.status}</span>;
+      case 'created_at':
+        return formatDate(item.created_at);
       case 'actions':
         return (
           <div className="actions-cell">
@@ -103,14 +92,12 @@ const RmaTable = ({
     }
   };
 
-  // Pagination range calculation
+  // Pagination calculations
   const currentPage = pagination?.current_page ?? 1;
-const perPage = pagination?.per_page ?? data.length;
-const total = pagination?.total ?? data.length;
-
-const start = total === 0 ? 0 : (currentPage - 1) * perPage + 1;
-const end = Math.min(currentPage * perPage, total);
-
+  const perPage = pagination?.per_page ?? data.length;
+  const total = pagination?.total ?? data.length;
+  const start = total === 0 ? 0 : (currentPage - 1) * perPage + 1;
+  const end = Math.min(currentPage * perPage, total);
 
   return (
     <div className={`rma-table-container ${className}`}>
@@ -127,10 +114,7 @@ const end = Math.min(currentPage * perPage, total);
                   <th>
                     <input
                       type="checkbox"
-                      checked={
-                        selectedItems.length > 0 &&
-                        selectedItems.length === data.length
-                      }
+                      checked={selectedItems.length > 0 && selectedItems.length === data.length}
                       onChange={toggleSelectAll}
                     />
                   </th>
@@ -142,9 +126,7 @@ const end = Math.min(currentPage * perPage, total);
                     onClick={col.sortable ? () => requestSort(col.key) : undefined}
                   >
                     {col.label}
-                    {col.sortable &&
-                      sortConfig.key === col.key &&
-                      (sortConfig.direction === 'asc' ? ' ▲' : ' ▼')}
+                    {col.sortable && sortConfig.key === col.key && (sortConfig.direction === 'asc' ? ' ▲' : ' ▼')}
                   </th>
                 ))}
               </tr>
@@ -173,7 +155,7 @@ const end = Math.min(currentPage * perPage, total);
             </tbody>
           </table>
 
-          {/* Footer summary and pagination */}
+          {/* Footer with summary & pagination */}
           <div className="table-footer mt-4 flex justify-between items-center">
             <p className="text-sm text-gray-600">
               Showing {start}-{end} of {total} RMAs
@@ -219,7 +201,7 @@ RmaTable.propTypes = {
   onPageChange: PropTypes.func,
   pagination: PropTypes.object,
   className: PropTypes.string,
-  emptyState: PropTypes.node
+  emptyState: PropTypes.node,
 };
 
 export default RmaTable;
