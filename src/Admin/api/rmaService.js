@@ -54,7 +54,7 @@ export const exportRmas = async (filters = {}) => {
     params: filters,
     responseType: 'blob'
   });
-  return response;
+  return response.data;
 };
 
 // ✅ Delete an RMA

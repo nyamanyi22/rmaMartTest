@@ -5,9 +5,7 @@ import Pagination from '../../Components/Pagination';
 import RmaFilters from '../../Components/RmaFilters';
 import { fetchRmas, bulkUpdateRmaStatus as bulkUpdateRma, exportRmas } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
-import { HiArrowPath, HiMagnifyingGlass } from 'react-icons/hi2';
-import { HiArrowDownTray } from 'react-icons/hi2';
-
+import { HiArrowPath, HiMagnifyingGlass, HiArrowDownTray } from 'react-icons/hi2';
 import './styles/BulkManagement.css';
 
 const BulkManagement = () => {
@@ -31,71 +29,28 @@ const BulkManagement = () => {
 
   const debouncedSearch = useDebounce(filters.search, 300);
 
-  const fetchData = useCallback(async () => {
-    const abortController = new AbortController();
+  const fetchData = useCallback(
+    async (signal) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetchRmas({
+          page: pagination.page,
+          limit: pagination.perPage,
+          filters: {
+            search: debouncedSearch,
+            status: filters.status === 'all' ? null : filters.status,
+            returnReason: filters.returnReason || null,
+            startDate: filters.dateRange.start,
+            endDate: filters.dateRange.end
+          },
+          sort,
+          signal
+        });
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await fetchRmas({
-        page: pagination.page,
-        limit: pagination.perPage,     // Use "limit" to match your API param name
-        filters: {
-          search: debouncedSearch,
-          status: filters.status === 'all' ? null : filters.status,
-          returnReason: filters.returnReason || null,
-          startDate: filters.dateRange.start,
-          endDate: filters.dateRange.end
-        },
-        sort,
-        signal: abortController.signal
-      });
-
-      if (!abortController.signal.aborted) {
-        setRmas(response.data);  // response.data is array of RMAs
-        setPagination(prev => ({
-          ...prev,
-          total: response.total,
-          page: response.current_page
-        }));
-
-        if (pagination.page !== response.current_page || debouncedSearch) {
-          setSelectedIds([]);
-        }
-      }
-    } catch (err) {
-      if (!abortController.signal.aborted) {
-        setError(err.response?.data?.message || err.message || 'Failed to fetch RMAs');
-      }
-    } finally {
-      if (!abortController.signal.aborted) {
-        setIsLoading(false);
-      }
-    }
-
-    return () => abortController.abort();
-  }, [pagination.page, pagination.perPage, debouncedSearch, sort, filters]);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    fetchRmas({
-      page: pagination.page,
-      limit: pagination.perPage,
-      filters: {
-        search: debouncedSearch,
-        status: filters.status === 'all' ? null : filters.status,
-        returnReason: filters.returnReason || null,
-        startDate: filters.dateRange.start,
-        endDate: filters.dateRange.end
-      },
-      sort,
-      signal: abortController.signal
-    })
-      .then(response => {
-        if (!abortController.signal.aborted) {
+        if (!signal.aborted) {
           setRmas(response.data);
-          setPagination(prev => ({
+          setPagination((prev) => ({
             ...prev,
             total: response.total,
             page: response.current_page
@@ -103,27 +58,28 @@ const BulkManagement = () => {
           if (pagination.page !== response.current_page || debouncedSearch) {
             setSelectedIds([]);
           }
-          setError(null);
         }
-      })
-      .catch(err => {
-        if (!abortController.signal.aborted) {
+      } catch (err) {
+        if (!signal.aborted) {
           setError(err.response?.data?.message || err.message || 'Failed to fetch RMAs');
         }
-      })
-      .finally(() => {
-        if (!abortController.signal.aborted) {
+      } finally {
+        if (!signal.aborted) {
           setIsLoading(false);
         }
-      });
+      }
+    },
+    [pagination.page, pagination.perPage, debouncedSearch, sort, filters]
+  );
 
-    return () => {
-      abortController.abort();
-    };
-  }, [pagination.page, pagination.perPage, debouncedSearch, sort, filters, refreshToken]);
+  useEffect(() => {
+    const abortController = new AbortController();
+    fetchData(abortController.signal);
+    return () => abortController.abort();
+  }, [fetchData, refreshToken]);
 
   const handleSelect = useCallback((id) => {
-    setSelectedIds(prev => {
+    setSelectedIds((prev) => {
       const newSelection = new Set(prev);
       newSelection.has(id) ? newSelection.delete(id) : newSelection.add(id);
       return Array.from(newSelection);
@@ -131,17 +87,17 @@ const BulkManagement = () => {
   }, []);
 
   const handleSelectAll = useCallback(() => {
-    setSelectedIds(prev =>
-      prev.length === rmas.length ? [] : rmas.map(rma => rma.id)
+    setSelectedIds((prev) =>
+      prev.length === rmas.length ? [] : rmas.map((rma) => rma.id)
     );
   }, [rmas]);
 
   const handlePageChange = useCallback((newPage) => {
-    setPagination(prev => ({ ...prev, page: newPage }));
+    setPagination((prev) => ({ ...prev, page: newPage }));
   }, []);
 
   const handleSort = useCallback((field) => {
-    setSort(prev => ({
+    setSort((prev) => ({
       field,
       order: prev.field === field && prev.order === 'asc' ? 'desc' : 'asc'
     }));
@@ -153,7 +109,6 @@ const BulkManagement = () => {
 
   const handleBulkAction = async (action) => {
     if (!selectedIds.length) return;
-
     try {
       setIsLoading(true);
       await bulkUpdateRma(selectedIds, action);
@@ -169,8 +124,6 @@ const BulkManagement = () => {
   const handleExport = async () => {
     try {
       setIsExporting(true);
-
-      // Export using current filters, not IDs, because your backend expects filters
       const blob = await exportRmas({
         search: filters.search,
         status: filters.status === 'all' ? null : filters.status,
@@ -182,7 +135,7 @@ const BulkManagement = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `RMAs_${new Date().toISOString().slice(0,10)}.csv`;
+      a.download = `RMAs_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -202,7 +155,6 @@ const BulkManagement = () => {
         handleSelectAll();
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSelectAll]);
@@ -212,12 +164,7 @@ const BulkManagement = () => {
       <div className="header-row">
         <div className="title-section">
           <h2>Bulk RMA Management</h2>
-          <button
-            onClick={handleRefresh}
-            className="icon-button"
-            disabled={isLoading}
-            aria-label="Refresh data"
-          >
+          <button onClick={handleRefresh} className="icon-button" disabled={isLoading} aria-label="Refresh data">
             <HiArrowPath size={20} className="icon" />
           </button>
         </div>
@@ -227,7 +174,7 @@ const BulkManagement = () => {
             filters={filters}
             onFilterChange={(updatedFilters) => {
               setFilters(updatedFilters);
-              setPagination(prev => ({ ...prev, page: 1 }));
+              setPagination((prev) => ({ ...prev, page: 1 }));
             }}
             onReset={() => {
               setFilters({
@@ -236,19 +183,13 @@ const BulkManagement = () => {
                 returnReason: '',
                 dateRange: { start: null, end: null }
               });
-              setPagination(prev => ({ ...prev, page: 1 }));
+              setPagination((prev) => ({ ...prev, page: 1 }));
             }}
             onSavePreset={(preset) => {
               console.log('Saved preset:', preset);
             }}
           />
-
-          <button
-            onClick={handleExport}
-            className="icon-button"
-            disabled={isExporting}
-            aria-label="Export data"
-          >
+          <button onClick={handleExport} className="icon-button" disabled={isExporting} aria-label="Export data">
             <HiArrowDownTray size={20} className="icon" />
           </button>
         </div>
@@ -270,9 +211,11 @@ const BulkManagement = () => {
         onSelectAll={handleSelectAll}
         selectedIds={selectedIds}
         emptyMessage={
-          isLoading ? 'Loading RMAs...' :
-          debouncedSearch ? 'No matching RMAs found' :
-          'No RMAs available with current filters'
+          isLoading
+            ? 'Loading RMAs...'
+            : debouncedSearch
+            ? 'No matching RMAs found'
+            : 'No RMAs available with current filters'
         }
       />
 
@@ -280,8 +223,7 @@ const BulkManagement = () => {
         <div className="pagination-container">
           <div className="results-count">
             Showing {(pagination.page - 1) * pagination.perPage + 1}-
-            {Math.min(pagination.page * pagination.perPage, pagination.total)}
-            {' '}of {pagination.total} RMAs
+            {Math.min(pagination.page * pagination.perPage, pagination.total)} of {pagination.total} RMAs
           </div>
           <Pagination
             currentPage={pagination.page}
@@ -292,7 +234,7 @@ const BulkManagement = () => {
         </div>
       )}
 
-      <BulkAction />
+      <BulkAction onAction={handleBulkAction} />
     </div>
   );
 };

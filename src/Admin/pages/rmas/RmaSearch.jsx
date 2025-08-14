@@ -3,6 +3,8 @@ import RmaFilters from '../../Components/RmaFilters';
 import RmaTable from '../../Components/RmaTable';
 import { fetchRmas } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
+import Pagination from '../../Components/Pagination';
+
 import './styles/RmaSearch.css';
 
 const RmaSearch = () => {
