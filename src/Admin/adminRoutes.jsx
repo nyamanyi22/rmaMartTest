@@ -9,7 +9,7 @@ import ApprovedRmas from './pages/rmas/ApprovedRmas';
 import BulkManagement from './pages/rmas/BulkMAnagement';
 import ProcessingRmas from './pages/rmas/Processing';
 import RmaStatusEdit from './pages/rmas/RmaStatusEdit';
-import ManageCases from './pages/cases/ManageCases';
+
 import CustomerList from './pages/customers/CustomerList'; // New List Component
 import CreateCustomer from './pages/customers/CreateCustomer'; // New Create Component
 import UpdateCustomer from './pages/customers/EditCustomer'; // New Edit Component
@@ -41,7 +41,7 @@ const AdminRoutes = [
     <Route path="rmas/approved" element={<ApprovedRmas />} />
     <Route path="rmas/bulk" element={<BulkManagement />} />
     <Route path="rmas/processing" element={<ProcessingRmas />} />
-    <Route path="rmas/manage" element={<ManageCases />} />
+   
     <Route path="/admin/rmas/:id/edit" element={<RmaStatusEdit />} />
 
     <Route path="customers/list" element={<CustomerList />} />

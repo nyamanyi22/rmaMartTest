@@ -29,7 +29,7 @@ const menuItems = [
       { to: '/admin/rmas/rejected', label: 'Rejected RMAs' },
       { to: '/admin/rmas/processing', label: 'Processing RMAs' },
       { to: '/admin/rmas/bulk', label: 'Bulk Management' },
-      { to: '/admin/rmas/manage', label: 'Manage Cases' },
+   
     ]
   },
   {

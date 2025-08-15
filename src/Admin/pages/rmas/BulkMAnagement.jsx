@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import RmaTable from '../../Components/RmaTable';
 import BulkAction from '../../Components/BulkAction';
+import ConfirmableBulkAction from '../../Components/ConfirmableBulkAction';
 import Pagination from '../../Components/Pagination';
 import RmaFilters from '../../Components/RmaFilters';
 import { fetchRmas, bulkUpdateRmaStatus as bulkUpdateRma, exportRmas } from '../../api/rmaService';
@@ -121,31 +122,38 @@ const BulkManagement = () => {
     }
   };
 
-  const handleExport = async () => {
-    try {
-      setIsExporting(true);
-      const blob = await exportRmas({
-        search: filters.search,
-        status: filters.status === 'all' ? null : filters.status,
-        returnReason: filters.returnReason || null,
-        startDate: filters.dateRange.start,
-        endDate: filters.dateRange.end
-      });
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `RMAs_${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-    } catch (err) {
-      alert(`Export failed: ${err.message}`);
-    } finally {
-      setIsExporting(false);
+const handleExport = async (ids = []) => {
+  try {
+    if (ids.length === 0 && (!rmas || rmas.length === 0)) {
+      alert('No data available to export.');
+      return;
     }
-  };
+
+    setIsExporting(true);
+    const blob = await exportRmas({
+      ids: ids.length > 0 ? ids : null, // send IDs only if exporting selected
+      search: filters.search,
+      status: filters.status === 'all' ? null : filters.status,
+      returnReason: filters.returnReason || null,
+      startDate: filters.dateRange.start,
+      endDate: filters.dateRange.end
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `RMAs_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  } catch (err) {
+    alert(`Export failed: ${err.message}`);
+  } finally {
+    setIsExporting(false);
+  }
+};
+
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -210,6 +218,7 @@ const BulkManagement = () => {
         onSelect={handleSelect}
         onSelectAll={handleSelectAll}
         selectedIds={selectedIds}
+        onSelectItems={setSelectedIds}
         emptyMessage={
           isLoading
             ? 'Loading RMAs...'
@@ -234,7 +243,17 @@ const BulkManagement = () => {
         </div>
       )}
 
-      <BulkAction onAction={handleBulkAction} />
+
+   <ConfirmableBulkAction
+  selectedIds={selectedIds}
+  allData={rmas} // Pass all data for export
+  isLoading={isLoading}
+  onClearSelection={() => setSelectedIds([])}
+  handleBulkAction={handleBulkAction}
+  handleExport={(ids) => handleExport(ids)}
+/>
+
+
     </div>
   );
 };
