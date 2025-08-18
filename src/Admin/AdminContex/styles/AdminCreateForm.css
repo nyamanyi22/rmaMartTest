@@ -1,0 +1,65 @@
+.admin-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+}
+
+.admin-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.admin-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.admin-form input,
+.admin-form select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.admin-form button {
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-form button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.message {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}

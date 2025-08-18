@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import RmaTable from '../../Components/RmaTable';
-import BulkAction from '../../Components/BulkAction';
 import ConfirmableBulkAction from '../../Components/ConfirmableBulkAction';
 import Pagination from '../../Components/Pagination';
 import RmaFilters from '../../Components/RmaFilters';
 import { fetchRmas, bulkUpdateRmaStatus as bulkUpdateRma, exportRmas } from '../../api/rmaService';
 import { useDebounce } from '../../hooks/useDebounce';
-import { HiArrowPath, HiMagnifyingGlass, HiArrowDownTray } from 'react-icons/hi2';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './styles/BulkManagement.css';
 
 const BulkManagement = () => {
@@ -16,244 +16,194 @@ const BulkManagement = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState(null);
   const [refreshToken, setRefreshToken] = useState(Date.now());
-  const [sort, setSort] = useState({ field: 'createdAt', order: 'desc' });
   const [pagination, setPagination] = useState({ page: 1, perPage: 20, total: 0 });
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
     returnReason: '',
-    dateRange: {
-      start: null,
-      end: null
-    }
+    dateRange: { start: null, end: null },
   });
 
   const debouncedSearch = useDebounce(filters.search, 300);
 
-  const fetchData = useCallback(
-    async (signal) => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetchRmas({
-          page: pagination.page,
-          limit: pagination.perPage,
-          filters: {
-            search: debouncedSearch,
-            status: filters.status === 'all' ? null : filters.status,
-            returnReason: filters.returnReason || null,
-            startDate: filters.dateRange.start,
-            endDate: filters.dateRange.end
-          },
-          sort,
-          signal
-        });
-
-        if (!signal.aborted) {
-          setRmas(response.data);
-          setPagination((prev) => ({
-            ...prev,
-            total: response.total,
-            page: response.current_page
-          }));
-          if (pagination.page !== response.current_page || debouncedSearch) {
-            setSelectedIds([]);
-          }
-        }
-      } catch (err) {
-        if (!signal.aborted) {
-          setError(err.response?.data?.message || err.message || 'Failed to fetch RMAs');
-        }
-      } finally {
-        if (!signal.aborted) {
-          setIsLoading(false);
-        }
-      }
-    },
-    [pagination.page, pagination.perPage, debouncedSearch, sort, filters]
-  );
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    fetchData(abortController.signal);
-    return () => abortController.abort();
-  }, [fetchData, refreshToken]);
-
-  const handleSelect = useCallback((id) => {
-    setSelectedIds((prev) => {
-      const newSelection = new Set(prev);
-      newSelection.has(id) ? newSelection.delete(id) : newSelection.add(id);
-      return Array.from(newSelection);
-    });
-  }, []);
-
-  const handleSelectAll = useCallback(() => {
-    setSelectedIds((prev) =>
-      prev.length === rmas.length ? [] : rmas.map((rma) => rma.id)
-    );
-  }, [rmas]);
-
-  const handlePageChange = useCallback((newPage) => {
-    setPagination((prev) => ({ ...prev, page: newPage }));
-  }, []);
-
-  const handleSort = useCallback((field) => {
-    setSort((prev) => ({
-      field,
-      order: prev.field === field && prev.order === 'asc' ? 'desc' : 'asc'
-    }));
-  }, []);
-
-  const handleRefresh = useCallback(() => {
-    setRefreshToken(Date.now());
-  }, []);
-
-  const handleBulkAction = async (action) => {
-    if (!selectedIds.length) return;
+  const fetchData = useCallback(async (signal) => {
     try {
       setIsLoading(true);
-      await bulkUpdateRma(selectedIds, action);
+      setError(null);
+
+      const response = await fetchRmas({
+        page: pagination.page,
+        limit: pagination.perPage,
+        filters: {
+          search: debouncedSearch,
+          status: filters.status === 'all' ? null : filters.status,
+          returnReason: filters.returnReason || null,
+          startDate: filters.dateRange.start,
+          endDate: filters.dateRange.end
+        },
+        signal
+      });
+
+      if (!signal.aborted) {
+        setRmas(response.data);
+        setPagination((prev) => ({
+          ...prev,
+          total: response.total,
+          page: response.current_page
+        }));
+        setSelectedIds([]);
+      }
+    } catch (err) {
+      if (!signal.aborted) {
+        const msg = err.response?.data?.message || err.message || 'Failed to fetch RMAs';
+        setError(msg);
+        toast.error(msg);
+      }
+    } finally {
+      if (!signal.aborted) setIsLoading(false);
+    }
+  }, [pagination.page, debouncedSearch, filters]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchData(controller.signal);
+    return () => controller.abort();
+  }, [fetchData, refreshToken]);
+
+  const handleSelectItems = (ids) => setSelectedIds(ids);
+
+  const handleRefresh = () => setRefreshToken(Date.now());
+
+  const handleBulkAction = async (action) => {
+    if (!selectedIds.length) {
+      toast.info('No RMAs selected.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      // Convert selectedIds to numbers
+      const ids = selectedIds.map(id => Number(id));
+
+      // Map friendly action names to backend enum values
+      const statusMap = {
+        approve: 'APPROVED',
+        reject: 'REJECTED',
+        complete: 'COMPLETED',
+        pending: 'PENDING',
+        processing: 'PROCESSING'
+      };
+
+      const status = statusMap[action.toLowerCase()];
+      if (!status) throw new Error(`Invalid action: ${action}`);
+
+      await bulkUpdateRma(ids, status); // send correct payload
       setSelectedIds([]);
       setRefreshToken(Date.now());
+      toast.success(`Successfully updated ${ids.length} RMA(s) to ${status}`);
     } catch (err) {
-      alert(`Failed to ${action}: ${err.response?.data?.message || err.message}`);
+      toast.error(`Failed to ${action}: ${err.response?.data?.message || err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-const handleExport = async (ids = []) => {
-  try {
-    if (ids.length === 0 && (!rmas || rmas.length === 0)) {
-      alert('No data available to export.');
-      return;
-    }
-
-    setIsExporting(true);
-    const blob = await exportRmas({
-      ids: ids.length > 0 ? ids : null, // send IDs only if exporting selected
-      search: filters.search,
-      status: filters.status === 'all' ? null : filters.status,
-      returnReason: filters.returnReason || null,
-      startDate: filters.dateRange.start,
-      endDate: filters.dateRange.end
-    });
-
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `RMAs_${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-  } catch (err) {
-    alert(`Export failed: ${err.message}`);
-  } finally {
-    setIsExporting(false);
-  }
-};
-
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setSelectedIds([]);
-      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-        e.preventDefault();
-        handleSelectAll();
+  const handleExport = async (ids = []) => {
+    try {
+      if (!rmas.length) {
+        toast.info('No data available to export.');
+        return;
       }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSelectAll]);
+      setIsExporting(true);
+
+      const blob = await exportRmas({
+        ids: ids.length ? ids : null,
+        search: filters.search,
+        status: filters.status === 'all' ? null : filters.status,
+        returnReason: filters.returnReason || null,
+        startDate: filters.dateRange.start,
+        endDate: filters.dateRange.end
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `RMAs_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Export successful!');
+    } catch (err) {
+      toast.error(`Export failed: ${err.message}`);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="bulk-management-container">
       <div className="header-row">
-        <div className="title-section">
-          <h2>Bulk RMA Management</h2>
-          <button onClick={handleRefresh} className="icon-button" disabled={isLoading} aria-label="Refresh data">
-            <HiArrowPath size={20} className="icon" />
-          </button>
-        </div>
-
+        <h2>Bulk RMA Management</h2>
         <div className="controls">
           <RmaFilters
             filters={filters}
-            onFilterChange={(updatedFilters) => {
-              setFilters(updatedFilters);
-              setPagination((prev) => ({ ...prev, page: 1 }));
-            }}
+            onFilterChange={(updated) => { setFilters(updated); setPagination(p => ({ ...p, page: 1 })); }}
             onReset={() => {
-              setFilters({
-                search: '',
-                status: 'all',
-                returnReason: '',
-                dateRange: { start: null, end: null }
-              });
-              setPagination((prev) => ({ ...prev, page: 1 }));
-            }}
-            onSavePreset={(preset) => {
-              console.log('Saved preset:', preset);
+              setFilters({ search: '', status: 'all', returnReason: '', dateRange: { start: null, end: null } });
+              setPagination(p => ({ ...p, page: 1 }));
             }}
           />
-          <button onClick={handleExport} className="icon-button" disabled={isExporting} aria-label="Export data">
-            <HiArrowDownTray size={20} className="icon" />
-          </button>
+          <button onClick={handleExport} disabled={isExporting}>Export</button>
+          <button onClick={handleRefresh} disabled={isLoading}>Refresh</button>
         </div>
       </div>
 
-      {error && (
-        <div className="error-message">
-          {error}
-          <button onClick={handleRefresh}>Retry</button>
-        </div>
-      )}
+      {error && <div className="error-message">{error} <button onClick={handleRefresh}>Retry</button></div>}
 
       <RmaTable
         data={rmas}
         isLoading={isLoading}
-        sortConfig={sort}
-        onSort={handleSort}
-        onSelect={handleSelect}
-        onSelectAll={handleSelectAll}
-        selectedIds={selectedIds}
-        onSelectItems={setSelectedIds}
-        emptyMessage={
-          isLoading
-            ? 'Loading RMAs...'
-            : debouncedSearch
-            ? 'No matching RMAs found'
-            : 'No RMAs available with current filters'
-        }
+        selectable
+        selectedItems={selectedIds}
+        onSelectItems={handleSelectItems}
+        onRowClick={(item) => {
+          const id = Number(item.id);
+          if (selectedIds.includes(id)) {
+            setSelectedIds(selectedIds.filter(i => i !== id));
+          } else {
+            setSelectedIds([...selectedIds, id]);
+          }
+        }}
       />
 
       {pagination.total > 0 && (
-        <div className="pagination-container">
-          <div className="results-count">
-            Showing {(pagination.page - 1) * pagination.perPage + 1}-
-            {Math.min(pagination.page * pagination.perPage, pagination.total)} of {pagination.total} RMAs
-          </div>
-          <Pagination
-            currentPage={pagination.page}
-            totalPages={Math.ceil(pagination.total / pagination.perPage)}
-            onPageChange={handlePageChange}
-            disabled={isLoading}
-          />
-        </div>
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={Math.ceil(pagination.total / pagination.perPage)}
+          onPageChange={(page) => setPagination(p => ({ ...p, page }))}
+        />
       )}
 
+      <ConfirmableBulkAction
+        selectedIds={selectedIds}
+        allData={rmas}
+        isLoading={isLoading}
+        onClearSelection={() => setSelectedIds([])}
+        handleBulkAction={handleBulkAction}
+        handleExport={handleExport}
+      />
 
-   <ConfirmableBulkAction
-  selectedIds={selectedIds}
-  allData={rmas} // Pass all data for export
-  isLoading={isLoading}
-  onClearSelection={() => setSelectedIds([])}
-  handleBulkAction={handleBulkAction}
-  handleExport={(ids) => handleExport(ids)}
-/>
-
-
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar={false} 
+        newestOnTop={false} 
+        closeOnClick 
+        rtl={false} 
+        pauseOnFocusLoss 
+        draggable 
+        pauseOnHover 
+      />
     </div>
   );
 };

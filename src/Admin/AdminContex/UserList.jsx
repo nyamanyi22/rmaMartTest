@@ -10,7 +10,8 @@ const AdminList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axiosAdmin.get('/users'); // GET /api/admin/users
+   const res = await axiosAdmin.get('/admins'); // resolves to /api/admin/admins
+; // GET /api/admin/users
         setUsers(res.data);
       } catch (err) {
         console.error('Failed to fetch users:', err);
@@ -43,15 +44,16 @@ const AdminList = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
-              <tr key={user.id}>
-                <td>{index + 1}</td>
-                <td>{user.first_name} {user.last_name}</td>
-                <td>{user.email}</td>
-                <td>{user.role.replace('_', ' ').toUpperCase()}</td>
-              </tr>
-            ))}
-          </tbody>
+  {users.map((user, index) => (
+    <tr key={user.id}>
+      <td data-label="#"> {index + 1} </td>
+      <td data-label="Full Name"> {user.first_name} {user.last_name} </td>
+      <td data-label="Email"> {user.email} </td>
+      <td data-label="Role"> {user.role.replace('_', ' ').toUpperCase()} </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       )}
     </div>

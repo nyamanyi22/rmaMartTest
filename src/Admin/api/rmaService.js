@@ -22,10 +22,10 @@ export const fetchRmas = async ({ page = 1, limit = 20, filters = {} }) => {
 // ✅ Fetch one RMA by ID
 export const fetchRmaById = async (id) => {
   const res = await axiosAdmin.get(`/rmas/${id}`);
-  return res.data.rma; // Adjust depending on your API response shape
+  return res.data.rma;
 };
 
-// ✅ Update entire RMA (if used for more than just status)
+// ✅ Update entire RMA (full update)
 export const updateRma = async (id, data) => {
   const res = await axiosAdmin.put(`/rmas/${id}`, data);
   return res.data;
@@ -33,17 +33,41 @@ export const updateRma = async (id, data) => {
 
 // ✅ Update one RMA status only
 export const updateRmaStatus = async (id, newStatus) => {
+  const statusEnumMap = {
+    pending: 'PENDING',
+    approved: 'APPROVED',
+    rejected: 'REJECTED',
+    completed: 'COMPLETED',
+    processing: 'PROCESSING'
+  };
+
+  const status = statusEnumMap[newStatus.toLowerCase()];
+  if (!status) throw new Error(`Invalid status: ${newStatus}`);
+
   const response = await axiosAdmin.patch(`/rmas/${id}/status`, {
-    status: newStatus
+    status
   });
   return response.data;
 };
 
-// ✅ Bulk update statuses
+// ✅ Bulk update RMA statuses
 export const bulkUpdateRmaStatus = async (ids = [], newStatus) => {
-  const response = await axiosAdmin.post(`/rmas/bulk-update-status`, {
-    ids,
-    status: newStatus
+  if (!ids.length) throw new Error('No RMA IDs selected');
+
+  const statusEnumMap = {
+    pending: 'PENDING',
+    approved: 'APPROVED',
+    rejected: 'REJECTED',
+    completed: 'COMPLETED',
+    processing: 'PROCESSING'
+  };
+
+  const status = statusEnumMap[newStatus.toLowerCase()];
+  if (!status) throw new Error(`Invalid status: ${newStatus}`);
+
+  const response = await axiosAdmin.put('/rmas/bulk-status-update', {
+    ids: ids.map(id => Number(id)),
+    status
   });
   return response.data;
 };
@@ -57,14 +81,13 @@ export const exportRmas = async (filters = {}) => {
   return response.data;
 };
 
-// ✅ Delete an RMA
+// ✅ Delete an RMA (unchanged)
 export const deleteRma = async (id) => {
   const response = await axiosAdmin.delete(`/rmas/${id}`);
   return response.data;
 };
 
 // ✅ Fetch valid status options
-// ✅ Fetch valid status options (with credentials + JSON header)
 export const fetchStatusOptions = async () => {
   try {
     const res = await axiosAdmin.get('/rma-statuses', {
@@ -73,7 +96,7 @@ export const fetchStatusOptions = async () => {
         Accept: 'application/json'
       }
     });
-    return res.data.statuses; // Since your backend returns { statuses: [...] }
+    return res.data.statuses;
   } catch (error) {
     console.error('Error loading statuses:', error);
     throw error;
