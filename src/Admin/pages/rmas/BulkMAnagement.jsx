@@ -88,12 +88,22 @@ const BulkManagement = () => {
 
       // Map friendly action names to backend enum values
       const statusMap = {
-        approve: 'APPROVED',
-        reject: 'REJECTED',
-        complete: 'COMPLETED',
-        pending: 'PENDING',
-        processing: 'PROCESSING'
-      };
+  approve: 'APPROVED',
+  approved: 'APPROVED',
+
+  reject: 'REJECTED',
+  rejected: 'REJECTED',
+
+  complete: 'COMPLETED',
+  completed: 'COMPLETED',
+
+  pending: 'PENDING',
+
+  process: 'PROCESSING',
+  processing: 'PROCESSING',
+  processed: 'PROCESSING'
+};
+
 
       const status = statusMap[action.toLowerCase()];
       if (!status) throw new Error(`Invalid action: ${action}`);

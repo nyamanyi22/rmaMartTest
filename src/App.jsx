@@ -11,6 +11,7 @@ import Contact from './Pages/ContactUs';
 import ReturnPolicy from './Pages/ReturnPolicy';
 import CustomerSignup from './Pages/SignUp';
 import Login from './components/Login';
+import ClientRmaStatus from './Pages/CaseStatus';
 import PreRequest from './Pages/PreRMARequest';
 import RMARequest from './Pages/RMARequest';
 import PrivateRoute from './components/PrivateRoute';
@@ -33,6 +34,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/PreRequest" element={<PrivateRoute><PreRequest /></PrivateRoute>} />
           <Route path="/RMARequest" element={<PrivateRoute><RMARequest /></PrivateRoute>} />
+          <Route path="/RmaStatus" element={<PrivateRoute><ClientRmaStatus /></PrivateRoute>} />
 
           {/* admin routes */}
           {AdminRoutes}

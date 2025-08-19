@@ -3,7 +3,7 @@ import { FaSearch, FaUserEdit, FaPlusCircle, FaFileDownload } from 'react-icons/
 
 const QuickActions = () => {
   const actions = [
-    { icon: <FaSearch />, title: 'Check RMA Case Status', link: '/status' },
+    { icon: <FaSearch />, title: 'Check RMA Case Status', link: '/RmaStatus' },
     { icon: <FaUserEdit />, title: 'Review Account Profile', link: '/account' },
     { icon: <FaPlusCircle />, title: 'Submit New RMA Request', link: '/PreRequest' },
     { icon: <FaFileDownload />, title: 'Product Return Policy', link: '/ReturnPolicy' },

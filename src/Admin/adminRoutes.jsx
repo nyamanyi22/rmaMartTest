@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import AdminLayout from './Components/AdminLayout';
-import RmaDashboard from './pages/rmas/RmaDashboard';
+import  AdminDashboard from './pages/rmas/RmaDashboard';
 import RmaDetailPage from './pages/rmas/RmaDetailPag';
 import RejectedRmas from './pages/rmas/RejectedRmas';
 import PendingRmas from './pages/rmas/PendingRmas';
@@ -34,7 +34,7 @@ const AdminRoutes = [
     }
     key="admin-root"
   >
-    <Route path="rmas/dashboard" element={<RmaDashboard />} />
+    <Route path="rmas/dashboard" element={< AdminDashboard />} />
     <Route path="rma-detail/:id" element={<RmaDetailPage />} />
     <Route path="rmas/rejected" element={<RejectedRmas />} />
     <Route path="rmas/pending" element={<PendingRmas />} />

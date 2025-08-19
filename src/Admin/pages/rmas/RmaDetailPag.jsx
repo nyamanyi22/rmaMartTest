@@ -1,113 +1,113 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './styles/rmadetails.css';
+// src/Admin/pages/rmas/RmaDetailPage.jsx
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "../../Components/ui/card";
+import { Button } from "../../Components/ui/button";
+import { Badge } from "../../Components/ui/badge";
+import { Separator } from "../../Components/ui/ceparator";
+import { CheckCircle, XCircle, Clock, RefreshCcw } from "lucide-react";
+import axiosAdmin from "../../api/axiosAdmin";
 
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-
-const statusOptions = ['Pending', 'Approved', 'Rejected', 'Shipped', 'Completed'];
-
-const RmaDetailPage = () => {
-  const { id } = useParams(); // Get RMA ID from route
-  const navigate = useNavigate();
+export default function RmaDetailPage() {
+  const { id } = useParams();
   const [rma, setRma] = useState(null);
-  const [status, setStatus] = useState('');
-  const [note, setNote] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch single RMA
   useEffect(() => {
     const fetchRma = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/api/admin/rmas/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('adminToken')}`
-          }
-        });
-        setRma(res.data);
-        setStatus(res.data.status);
+        const res = await axiosAdmin.get(`/rmas/${id}`);
+        setRma(res.data.rma || res.data);
       } catch (err) {
-        console.error(err);
-        setError('Failed to load RMA details');
+        console.error("Error fetching RMA:", err);
+        setError("Failed to fetch RMA details.");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
-
     fetchRma();
   }, [id]);
 
-  // Handle status update
-  const handleStatusUpdate = async () => {
-    try {
-      await axios.put(`${API_BASE_URL}/api/admin/rmas/${id}/status`, {
-        status,
-        note
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('adminToken')}`
-        }
-      });
+  if (loading) return <p className="p-6 text-gray-500">Loading RMA details...</p>;
+  if (error) return <p className="p-6 text-red-500">{error}</p>;
+  if (!rma) return <p className="p-6 text-red-500">RMA not found.</p>;
 
-      alert('Status updated successfully!');
-      navigate('/admin/rmas'); // Go back or reload page
-    } catch (err) {
-      console.error(err);
-      alert('Failed to update status');
+  const getStatusClass = (status) => {
+    switch (status.toLowerCase()) {
+      case "approved": return "bg-green-600 text-white";
+      case "rejected": return "bg-red-600 text-white";
+      case "pending": return "bg-yellow-500 text-white";
+      default: return "bg-gray-400 text-white";
     }
   };
 
-  if (isLoading) return <div className="loading">Loading RMA...</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!rma) return <div>No RMA found.</div>;
-
   return (
-    <div className="rma-detail-page">
-    
-      <h1>RMA Detail - #{rma.rmaNumber}</h1>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+      {/* Left column - RMA Details */}
+      <div className="lg:col-span-2 space-y-6">
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex justify-between items-center">
+              <span>RMA #{rma.rma_number || rma.id}</span>
+              <Badge className={`uppercase ${getStatusClass(rma.status)}`}>
+                {rma.status}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500">
+              Opened on: {new Date(rma.created_at).toLocaleString()}
+            </p>
+            <Separator className="my-4" />
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <h3 className="font-semibold">Customer</h3>
+                <p>{rma.customer?.first_name} {rma.customer?.last_name}</p>
+                <p className="text-gray-500">{rma.customer?.email}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold">Product</h3>
+                <p>{rma.product?.name}</p>
+                <p className="text-gray-500">{rma.product?.code}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold">Reason</h3>
+                <p>{rma.return_reason}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold">Description</h3>
+                <p>{rma.problem_description || "—"}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      <section className="info-section">
-        <h2>Customer Info</h2>
-        <p><strong>Name:</strong> {rma.customer.name}</p>
-        <p><strong>Email:</strong> {rma.customer.email}</p>
-        <p><strong>Phone:</strong> {rma.customer.phone}</p>
-      </section>
-
-      <section className="info-section">
-        <h2>Product Info</h2>
-        <p><strong>Model:</strong> {rma.product.model}</p>
-        <p><strong>Serial Number:</strong> {rma.product.serialNumber}</p>
-      </section>
-
-      <section className="info-section">
-        <h2>Return Details</h2>
-        <p><strong>Reason:</strong> {rma.reason}</p>
-        <p><strong>Description:</strong> {rma.description}</p>
-      </section>
-
-      <section className="info-section">
-        <h2>Status Management</h2>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="status-select">
-          {statusOptions.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-        </select>
-        <textarea 
-          placeholder="Optional admin note..." 
-          value={note} 
-          onChange={(e) => setNote(e.target.value)}
-          className="note-textarea"
-        />
-        <button onClick={handleStatusUpdate} className="update-btn">Update Status</button>
-      </section>
-
-      <button onClick={() => navigate('/admin/rmas')} className="back-btn">← Back to Dashboard</button>
-     
+      {/* Right column - Actions & Timeline */}
+      <div className="space-y-6">
+      
+        <Card>
+          <CardHeader>
+            <CardTitle>Status Timeline</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {rma.history?.length ? (
+              rma.history.map((event, idx) => (
+                <div key={idx} className="border-l-2 border-gray-300 pl-3">
+                  <p className="text-sm">
+                    <span className="font-semibold">{event.status}</span> – {event.user} on{" "}
+                    {new Date(event.timestamp).toLocaleString()}
+                  </p>
+                  {event.note && <p className="text-xs text-gray-500">{event.note}</p>}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm">No history available.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
-};
-
-export default RmaDetailPage;
+}

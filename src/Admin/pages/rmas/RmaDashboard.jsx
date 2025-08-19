@@ -1,255 +1,217 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import RmaTable from '../../Components/RmaTable';
-import RmaFilters from '../../Components/RmaFilters';
-import Pagination from '../../Components/Pagination';
-import StatusBadge from '../../Components/StatusBadge';
-import { fetchRmas, updateRmaStatus } from '../../api/rmaService';
-import './styles/RmaDashboard.css';
+import { useEffect, useState } from 'react';
+import axiosAdmin from '../../api/axiosAdmin';
+import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { Card, CardContent, CardHeader, Grid, Typography, CircularProgress, Alert, Box, Tooltip as MuiTooltip } from '@mui/material';
 
-const exportToCSV = (data) => {
-  console.log("Exporting to CSV:", data);
-  alert("Export to CSV initiated! (Check console for data)");
+// Status colors
+const COLORS = {
+  PENDING: '#FFA500',
+  APPROVED: '#00C49F',
+  COMPLETED: '#0088FE',
+  REJECTED: '#FF0000',
+  PROCESSING: '#800080',
+  SHIPPED: '#FF8042',
 };
 
-const RmaDashboard = () => {
+const AdminDashboard = () => {
   const [data, setData] = useState({
-    rmas: [],
-    pagination: {
-      currentPage: 1,
-      totalPages: 1,
-      totalItems: 0,
-      itemsPerPage: 20,
-    },
+    rmaCounts: {},
+    totalProducts: 0,
+    totalCustomers: 0,
+    recentActivities: [],
+    monthlyStats: []
   });
-  const [filters, setFilters] = useState({
-    search: '',
-    status: 'all',
-    dateRange: { start: '', end: '' },
-    returnReason: '',
-  });
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
-  const fetchData = useCallback(async (page = data.pagination.currentPage) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await fetchRmas({
-        page,
-        limit: data.pagination.itemsPerPage,
-        filters: {
-          search: filters.search,
-          status: filters.status === 'all' ? '' : filters.status,
-          startDate: filters.dateRange.start,
-          endDate: filters.dateRange.end,
-          returnReason: filters.returnReason,
-        },
-      });
-
-      setData({
-        rmas: response.data || [],
-        pagination: {
-          currentPage: response.current_page || 1,
-          totalPages: response.last_page || 1,
-          totalItems: response.total || 0,
-          itemsPerPage: response.per_page || 20,
-        },
-      });
-      setSelectedItems([]);
-    } catch (err) {
-      setError(err.message || 'Failed to fetch RMAs. Please try again.');
-      console.error("Failed to fetch RMAs:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filters, data.pagination.itemsPerPage]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchData(1);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filters, fetchData]);
-
-  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosAdmin.get('/dashboard-data');
+        setData(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        setError('Failed to load dashboard data. Please try again later.');
+        setLoading(false);
+      }
+    };
     fetchData();
-  }, [data.pagination.itemsPerPage]);
+  }, []);
 
-  const handlePageChange = (newPage) => {
-    if (newPage !== data.pagination.currentPage) {
-      fetchData(newPage);
-    }
-  };
+  // Safe rmaCounts as numbers
+  const safeRmaCounts = {};
+  Object.entries(data.rmaCounts || {}).forEach(([key, value]) => {
+    safeRmaCounts[key] = typeof value === 'number' ? value : (value?.count || 0);
+  });
 
-  const handleFilterChange = (newFilters) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  };
+  // Prepare pie chart data
+  const pieData = Object.entries(safeRmaCounts).map(([key, value]) => ({
+    name: key.charAt(0) + key.slice(1).toLowerCase(),
+    value,
+    color: COLORS[key] || '#8884d8',
+  }));
 
-  const handleViewItem = (item) => {
-    navigate(`/admin/rma-detail/${item.id}`);
-  };
+  const totalRmas = pieData.reduce((sum, item) => sum + item.value, 0);
 
-  const handleBulkStatusUpdate = async (newStatus) => {
-    if (selectedItems.length === 0) return;
-    try {
-      setIsLoading(true);
-      await Promise.all(
-        selectedItems.map((id) => updateRmaStatus(id, newStatus))
-      );
-      await fetchData(data.pagination.currentPage);
-      setSelectedItems([]);
-      alert(`Successfully updated status to '${newStatus}' for selected RMAs.`);
-    } catch (err) {
-      setError(err.message || 'Failed to update RMA status. Please try again.');
-      console.error("Failed to update RMA status:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const formatNumber = (num) => num.toLocaleString();
 
-  const columns = [
-    {
-      key: 'rmaNumber',
-      label: 'RMA #',
-      sortable: true,
-      render: (value) => <span className="rma-number">{value}</span>,
-    },
-    {
-      key: 'customer.name',
-      label: 'Customer',
-      sortable: true,
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      sortable: true,
-      render: (value) => <StatusBadge status={value} />,
-    },
-    {
-      key: 'createdAt',
-      label: 'Date Created',
-      sortable: true,
-      render: (value) => (value ? new Date(value).toLocaleDateString() : '-'),
-    },
-    {
-      key: 'actions',
-      label: 'Actions',
-      render: (_, item) => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleViewItem(item);
-          }}
-          className="view-btn"
-        >
-          View
-        </button>
-      ),
-    },
-  ];
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
 
   if (error) {
     return (
-      <div className="error-container">
-        <h2>Error Loading RMA Data</h2>
-        <p>{error}</p>
-        <button onClick={() => fetchData(1)}>Retry</button>
-      </div>
+      <Box my={4}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
     );
   }
 
   return (
-    <div className="rma-dashboard">
-      <header className="dashboard-header">
-        <h1>RMA Management</h1>
-        <div className="header-actions">
-          <button
-            className="export-btn"
-            onClick={() => exportToCSV(data.rmas)}
-            disabled={data.rmas.length === 0 && !isLoading}
-          >
-            Export All to CSV
-          </button>
-          {selectedItems.length > 0 && (
-            <button
-              className="export-btn"
-              onClick={() =>
-                exportToCSV(
-                  data.rmas.filter((rma) => selectedItems.includes(rma.id))
-                )
-              }
-            >
-              Export Selected ({selectedItems.length})
-            </button>
-          )}
-        </div>
-      </header>
+    <Box sx={{ p: 3 }}>
+      {/* Summary Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard title="Total Customers" value={formatNumber(data.totalCustomers)} color="#4e73df" icon="👥" />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard title="Total Products" value={formatNumber(data.totalProducts)} color="#1cc88a" icon="📦" />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard title="Total RMAs" value={formatNumber(totalRmas)} color="#36b9cc" icon="🔄" />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard title="Active RMAs" value={formatNumber(totalRmas - (safeRmaCounts.COMPLETED || 0))} color="#f6c23e" icon="⚠️" />
+        </Grid>
+      </Grid>
 
-      <RmaFilters
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        statusOptions={[
-          { value: 'all', label: 'All Statuses' },
-          { value: 'pending', label: 'Pending' },
-          { value: 'approved', label: 'Approved' },
-          { value: 'rejected', label: 'Rejected' },
-          { value: 'shipped', label: 'Shipped' },
-          { value: 'completed', label: 'Completed' },
-        ]}
-      />
+      {/* Charts Row */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={6}>
+          <ChartCard title="RMA Status Distribution">
+            <Box sx={{ height: 400 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={120}
+                    innerRadius={60}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    isAnimationActive
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`${value} RMAs`, 'Count']} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Box>
+          </ChartCard>
+        </Grid>
 
-      {selectedItems.length > 0 && (
-        <div className="bulk-actions">
-          <span>{selectedItems.length} items selected</span>
-          <select
-            onChange={(e) => handleBulkStatusUpdate(e.target.value)}
-            defaultValue=""
-            className="bulk-status-select"
-            disabled={isLoading}
-          >
-            <option value="" disabled>
-              Update Status
-            </option>
-            <option value="approved">Approve</option>
-            <option value="rejected">Reject</option>
-            <option value="processed">Mark as Processed</option>
-          </select>
-        </div>
-      )}
+        <Grid item xs={12} md={6}>
+          <ChartCard title="Monthly RMA Trends">
+            <Box sx={{ height: 400 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={data.monthlyStats}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="created" fill="#8884d8" name="Created" />
+                  <Bar dataKey="completed" fill="#82ca9d" name="Completed" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Box>
+          </ChartCard>
+        </Grid>
+      </Grid>
 
-      <RmaTable
-        data={data.rmas}
-        columns={columns}
-        isLoading={isLoading}
-        selectable={true}
-        selectedItems={selectedItems}
-        onSelectItems={setSelectedItems}
-        onRowClick={handleViewItem}
-        emptyState={
-          <div className="empty-state">
-            {filters.search || filters.status !== 'all' ||
-            filters.dateRange.start || filters.dateRange.end ||
-            filters.returnReason
-              ? 'No matching RMAs found with current filters.'
-              : 'No RMAs available.'}
-          </div>
-        }
-      />
-
-      <Pagination
-        currentPage={data.pagination.currentPage}
-        totalPages={data.pagination.totalPages}
-        onPageChange={handlePageChange}
-      />
-
-      <div className="mt-2 text-sm text-gray-600 text-center">
-        Showing {data.rmas.length} of {data.pagination.totalItems} RMAs
-      </div>
-    </div>
+      {/* Recent Activities */}
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <ChartCard title="Recent Activities">
+            <Box sx={{ maxHeight: 400, overflowY: 'auto', px: 2, py: 1, backgroundColor: '#f9f9f9', borderRadius: 2 }}>
+              {data.recentActivities?.length > 0 ? (
+                <ul style={{ paddingLeft: 20 }}>
+                  {data.recentActivities.map((activity, index) => (
+                    <li key={index} style={{ marginBottom: 8 }}>
+                      <Typography variant="body2">
+                        <strong>{activity.action}</strong> - {activity.description}
+                        <span style={{ color: '#666', fontSize: '0.8rem', marginLeft: 8 }}>
+                          {new Date(activity.timestamp).toLocaleString()}
+                        </span>
+                      </Typography>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <Typography variant="body1" color="textSecondary">
+                  No recent activities found
+                </Typography>
+              )}
+            </Box>
+          </ChartCard>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
-export default RmaDashboard;
+// Metric Card Component
+const MetricCard = ({ title, value, color, icon }) => (
+  <MuiTooltip title={title}>
+    <Card sx={{
+      height: '100%',
+      transition: 'transform 0.2s',
+      '&:hover': { transform: 'scale(1.03)', boxShadow: 6 }
+    }}>
+      <CardContent>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box>
+            <Typography variant="subtitle2" color="textSecondary" gutterBottom>{title}</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{value}</Typography>
+          </Box>
+          <Box sx={{
+            backgroundColor: color + '20',
+            color: color,
+            borderRadius: '50%',
+            width: 56,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.5rem'
+          }}>
+            {icon}
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  </MuiTooltip>
+);
+
+// Chart Card Component
+const ChartCard = ({ title, children }) => (
+  <Card sx={{ height: '100%', boxShadow: 3 }}>
+    <CardHeader title={title} />
+    <CardContent>{children}</CardContent>
+  </Card>
+);
+
+export default AdminDashboard;

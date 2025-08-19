@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../components/header';
 
 const RMAPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -143,6 +144,7 @@ const RMAPage = () => {
   } else {
     content = (
       <div className="rma-form-container">
+      <Header />
         <div className="rma-form-card">
           <h2 className="rma-form-title">RMA Request Form</h2>
           {error && <div className="rma-error-box">{error}</div>}
