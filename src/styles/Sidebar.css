@@ -53,9 +53,6 @@
   transition: background 0.2s;
 }
 
-.menu-item:hover {
-  background-color: #dde1e7;
-}
 
 .menu-item .icon {
   font-size: 1.2rem;

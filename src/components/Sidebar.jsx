@@ -48,7 +48,7 @@ const Sidebar = () => {
           ))}
         </ul>
 
-        <div className="sidebar-footer">{isOpen ? "© 2025 MartRMA" : "©"}</div>
+       
       </div>
 
       {/* Mobile Toggle */}

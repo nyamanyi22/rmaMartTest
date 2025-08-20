@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Signup.css'; // Ensure your CSS is correctly linked
   import axios from 'axios';
+  import { NavLink } from 'react-router-dom';
+  import Header from '../components/header';
 
 // Mocking useNavigate and useAuth (as per your previous code)
 const useNavigate = () => {
@@ -330,7 +332,9 @@ const closeModal = () => setModal(null);
 
     return (
         <div className="signup-page-container">
+        
             <div className="signup-card">
+                 
                 <h2 className="signup-title">Customer Signup</h2>
                 <form onSubmit={handleSubmit} className="signup-form">
                     {/* --- Company Information --- */}

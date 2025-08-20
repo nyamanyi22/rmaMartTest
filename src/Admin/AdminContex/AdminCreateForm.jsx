@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './styles/AdminCreateForm.css';
+import { useNavigate } from 'react-router-dom'; 
 
 const AdminCreateForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -38,6 +40,7 @@ const AdminCreateForm = () => {
         password: '',
         password_confirmation: '',
       });
+      navigate('/admin/users/list');
     } catch (error) {
       if (error.response?.status === 422) {
         // validation errors

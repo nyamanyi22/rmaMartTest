@@ -5,7 +5,8 @@
     background-color: #ffffff; /* bg-white */
     border-radius: 0.75rem; /* rounded-xl */
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
-    max-width: 96rem; /* max-w-4xl (adjust as needed) */
+    max-width: 100%; /* max-w-4xl (adjust as needed) */
+    overflow-x: auto;
     margin: auto; /* Center the container */
     font-family: 'Inter', sans-serif; /* Example font */
 }
@@ -157,9 +158,10 @@
 
 .styled-table tbody td {
     padding: 1rem 1.5rem; /* px-6 py-4 */
-    font-size: 0.875rem; /* text-sm */
+    font-size: 0.65rem; /* text-sm */
     color: #374151; /* text-gray-900 */
-    white-space: nowrap; /* Prevent text wrapping */
+          white-space: normal;   /* ✅ allow wrapping */
+    word-break: break-word; /* Prevent text wrapping */
 }
 
 .action-buttons {

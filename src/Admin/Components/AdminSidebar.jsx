@@ -50,16 +50,7 @@ const menuItems = [
       { to: '/admin/products/create', label: 'Create Product' },
     ]
   },
-  {
-    to: '/admin/reports',
-    label: 'Reports',
-    icon: <HiOutlineChartBar />,
-    submenu: [
-      { to: '/admin/reports/rma-volume', label: 'RMA Volume' },
-      { to: '/admin/reports/turnaround', label: 'Turnaround Time' },
-      { to: '/admin/reports/reason-codes', label: 'Return Reasons' },
-    ]
-  },
+
   {
     to: '/admin/users',
     label: 'User Management',
@@ -80,6 +71,7 @@ const menuItems = [
     ]
   }
 ];
+
 
 const AdminSidebar = ({ isOpen, onLogout, user = { name: 'Admin', role: 'System Administrator' } }) => {
   const location = useLocation();
