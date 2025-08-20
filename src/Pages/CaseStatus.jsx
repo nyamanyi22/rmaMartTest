@@ -76,7 +76,7 @@ useEffect(() => {
           ))}
         </tbody>
       </table>
-      <Footer/>
+         <Footer />
     </div>
   );
 };

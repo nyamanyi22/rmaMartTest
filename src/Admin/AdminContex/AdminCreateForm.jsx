@@ -40,7 +40,7 @@ const AdminCreateForm = () => {
         password: '',
         password_confirmation: '',
       });
-      navigate('/admin/users/list');
+      navigate('/admin/users/list', { state: { message: 'Admin created successfully!' } });
     } catch (error) {
       if (error.response?.status === 422) {
         // validation errors
